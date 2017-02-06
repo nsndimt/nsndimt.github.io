@@ -84,28 +84,19 @@
 
 
 
-<meta name="description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
+<meta name="description" content="新行内公式语法更换Hexo的markdown引擎新引擎bug
+R_{m \times n} = U_{m \times m} S_{m \times n} V_{n \times n}对于每个X_i，P(X_i|Y=y_k)服从高斯分布N(\mu_{ik},\sigma_i)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="换成Hexo">
-<meta property="og:url" content="http://nsndimt.github.io/2017/01/18/换成Hexo/index.html">
+<meta property="og:title" content="Hexo添加mathjax">
+<meta property="og:url" content="http://nsndimt.github.io/2017/01/18/Hexo添加mathjax/index.html">
 <meta property="og:site_name" content="备忘录">
-<meta property="og:description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
-<meta property="og:updated_time" content="2017-02-05T14:49:50.437Z">
+<meta property="og:description" content="新行内公式语法更换Hexo的markdown引擎新引擎bug
+R_{m \times n} = U_{m \times m} S_{m \times n} V_{n \times n}对于每个X_i，P(X_i|Y=y_k)服从高斯分布N(\mu_{ik},\sigma_i)">
+<meta property="og:updated_time" content="2017-02-06T03:12:27.694Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="换成Hexo">
-<meta name="twitter:description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
+<meta name="twitter:title" content="Hexo添加mathjax">
+<meta name="twitter:description" content="新行内公式语法更换Hexo的markdown引擎新引擎bug
+R_{m \times n} = U_{m \times m} S_{m \times n} V_{n \times n}对于每个X_i，P(X_i|Y=y_k)服从高斯分布N(\mu_{ik},\sigma_i)">
 
 
 
@@ -133,13 +124,13 @@ npm换源网站
 
 
 
-  <link rel="canonical" href="http://nsndimt.github.io/2017/01/18/换成Hexo/"/>
+  <link rel="canonical" href="http://nsndimt.github.io/2017/01/18/Hexo添加mathjax/"/>
 
 
 
 
 
-  <title> 换成Hexo | 备忘录 </title>
+  <title> Hexo添加mathjax | 备忘录 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -252,7 +243,7 @@ npm换源网站
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://nsndimt.github.io/2017/01/18/换成Hexo/">
+  <link itemprop="mainEntityOfPage" href="http://nsndimt.github.io/2017/01/18/Hexo添加mathjax/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="John Doe">
@@ -276,7 +267,7 @@ npm换源网站
             
             
               
-                换成Hexo
+                Hexo添加mathjax
               
             
           </h1>
@@ -327,14 +318,8 @@ npm换源网站
       
 
       
-        <p>安装Node.js</p>
-<p><a href="http://blog.csdn.net/wjqiu/article/details/50549879" target="_blank" rel="external">npm换源网站</a></p>
-<p><a href="https://github.com/cnpm/cnpm" target="_blank" rel="external">淘宝推出的cnpm</a></p>
-<p><a href="http://jiji262.github.io/2016/04/15/2016-04-15-hexo-github-pages-blog/" target="_blank" rel="external">安装总结</a>大概四步<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">npm install hexo-cli -g</div><div class="line">hexo init blog</div><div class="line">cd blog</div><div class="line">npm install</div><div class="line">hexo generate</div><div class="line">hexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000</div></pre></td></tr></table></figure></p>
-<p>在_config.yml中这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:jiji262/jiji262.github.io.git</div></pre></td></tr></table></figure></p>
-<p>部署到github可能会有认证问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo deploy</div></pre></td></tr></table></figure></p>
-<p><a href="https://hexo.io/docs/configuration.html" target="_blank" rel="external">配置_config.yml</a></p>
-<p><a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown" target="_blank" rel="external">github flavored github</a>代码块高亮</p>
+        <p><a href="https://github.com/sun11/hexo-renderer-kramed" target="_blank" rel="external">新行内公式语法</a><br><a href="http://shomy.top/2016/10/22/hexo-markdown-mathjax/" target="_blank" rel="external">更换Hexo的markdown引擎</a><br><a href="http://2wildkids.com/2016/10/06/%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86Hexo%E5%92%8CMathJax%E7%9A%84%E5%85%BC%E5%AE%B9%E9%97%AE%E9%A2%98/" target="_blank" rel="external">新引擎bug</a></p>
+<script type="math/tex; mode=display">R_{m \times n} = U_{m \times m} S_{m \times n} V_{n \times n}</script><p>对于每个<script type="math/tex">X_i</script>，<script type="math/tex">P(X_i|Y=y_k)</script>服从高斯分布<script type="math/tex">N(\mu_{ik},\sigma_i)</script></p>
 
       
     </div>
@@ -361,8 +346,8 @@ npm换源网站
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/09/09/windows切换ip脚本/" rel="next" title="windows切换ip脚本">
-                <i class="fa fa-chevron-left"></i> windows切换ip脚本
+              <a href="/2017/01/18/重装玄学/" rel="next" title="重装玄学">
+                <i class="fa fa-chevron-left"></i> 重装玄学
               </a>
             
           </div>
@@ -370,10 +355,6 @@ npm换源网站
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/01/18/重装玄学/" rel="prev" title="重装玄学">
-                重装玄学 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>

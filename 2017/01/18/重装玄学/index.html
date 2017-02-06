@@ -84,28 +84,34 @@
 
 
 
-<meta name="description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
+<meta name="description" content="uefi vs legacy
+mbr vs gpt
+三种引导组合 uefi+mbr uefi+gpt legacy+mbr
+注意legacy不能引导gpt不代表不能用gpt做从盘，读取gpt从盘只与系统有关
+修改uefi ubuntu启动盘: bash efibootmgr winpe:bootice bootbcd
+修改mbr winpe:bootice eazybcd
+引导救急 ubuntu启">
 <meta property="og:type" content="article">
-<meta property="og:title" content="换成Hexo">
-<meta property="og:url" content="http://nsndimt.github.io/2017/01/18/换成Hexo/index.html">
+<meta property="og:title" content="重装玄学">
+<meta property="og:url" content="http://nsndimt.github.io/2017/01/18/重装玄学/index.html">
 <meta property="og:site_name" content="备忘录">
-<meta property="og:description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
-<meta property="og:updated_time" content="2017-02-05T14:49:50.437Z">
+<meta property="og:description" content="uefi vs legacy
+mbr vs gpt
+三种引导组合 uefi+mbr uefi+gpt legacy+mbr
+注意legacy不能引导gpt不代表不能用gpt做从盘，读取gpt从盘只与系统有关
+修改uefi ubuntu启动盘: bash efibootmgr winpe:bootice bootbcd
+修改mbr winpe:bootice eazybcd
+引导救急 ubuntu启">
+<meta property="og:updated_time" content="2017-02-06T03:11:17.542Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="换成Hexo">
-<meta name="twitter:description" content="安装Node.js
-npm换源网站
-淘宝推出的cnpm
-安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
-在_config.yml中这样写123deploy:  type: git  repo">
+<meta name="twitter:title" content="重装玄学">
+<meta name="twitter:description" content="uefi vs legacy
+mbr vs gpt
+三种引导组合 uefi+mbr uefi+gpt legacy+mbr
+注意legacy不能引导gpt不代表不能用gpt做从盘，读取gpt从盘只与系统有关
+修改uefi ubuntu启动盘: bash efibootmgr winpe:bootice bootbcd
+修改mbr winpe:bootice eazybcd
+引导救急 ubuntu启">
 
 
 
@@ -133,13 +139,13 @@ npm换源网站
 
 
 
-  <link rel="canonical" href="http://nsndimt.github.io/2017/01/18/换成Hexo/"/>
+  <link rel="canonical" href="http://nsndimt.github.io/2017/01/18/重装玄学/"/>
 
 
 
 
 
-  <title> 换成Hexo | 备忘录 </title>
+  <title> 重装玄学 | 备忘录 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -252,7 +258,7 @@ npm换源网站
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://nsndimt.github.io/2017/01/18/换成Hexo/">
+  <link itemprop="mainEntityOfPage" href="http://nsndimt.github.io/2017/01/18/重装玄学/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="John Doe">
@@ -276,7 +282,7 @@ npm换源网站
             
             
               
-                换成Hexo
+                重装玄学
               
             
           </h1>
@@ -327,14 +333,14 @@ npm换源网站
       
 
       
-        <p>安装Node.js</p>
-<p><a href="http://blog.csdn.net/wjqiu/article/details/50549879" target="_blank" rel="external">npm换源网站</a></p>
-<p><a href="https://github.com/cnpm/cnpm" target="_blank" rel="external">淘宝推出的cnpm</a></p>
-<p><a href="http://jiji262.github.io/2016/04/15/2016-04-15-hexo-github-pages-blog/" target="_blank" rel="external">安装总结</a>大概四步<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">npm install hexo-cli -g</div><div class="line">hexo init blog</div><div class="line">cd blog</div><div class="line">npm install</div><div class="line">hexo generate</div><div class="line">hexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000</div></pre></td></tr></table></figure></p>
-<p>在_config.yml中这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:jiji262/jiji262.github.io.git</div></pre></td></tr></table></figure></p>
-<p>部署到github可能会有认证问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo deploy</div></pre></td></tr></table></figure></p>
-<p><a href="https://hexo.io/docs/configuration.html" target="_blank" rel="external">配置_config.yml</a></p>
-<p><a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown" target="_blank" rel="external">github flavored github</a>代码块高亮</p>
+        <p>uefi vs legacy</p>
+<p>mbr vs gpt</p>
+<p>三种引导组合 uefi+mbr uefi+gpt legacy+mbr</p>
+<p>注意legacy不能引导gpt不代表不能用gpt做从盘，读取gpt从盘只与系统有关</p>
+<p>修改uefi ubuntu启动盘: bash efibootmgr winpe:bootice bootbcd</p>
+<p>修改mbr winpe:bootice eazybcd</p>
+<p>引导救急 ubuntu启动盘 bootrepair 或重装grub 或win启动盘 bootrec</p>
+<p>u盘启动有玄学，出错就换个</p>
 
       
     </div>
@@ -361,8 +367,8 @@ npm换源网站
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/09/09/windows切换ip脚本/" rel="next" title="windows切换ip脚本">
-                <i class="fa fa-chevron-left"></i> windows切换ip脚本
+              <a href="/2017/01/18/换成Hexo/" rel="next" title="换成Hexo">
+                <i class="fa fa-chevron-left"></i> 换成Hexo
               </a>
             
           </div>
@@ -371,8 +377,8 @@ npm换源网站
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/01/18/重装玄学/" rel="prev" title="重装玄学">
-                重装玄学 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/01/18/Hexo添加mathjax/" rel="prev" title="Hexo添加mathjax">
+                Hexo添加mathjax <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
