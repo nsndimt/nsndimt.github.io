@@ -98,7 +98,7 @@ npm换源网站
 淘宝推出的cnpm
 安装总结大概四步123456npm install hexo-cli -ghexo init blogcd blognpm installhexo generatehexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000
 在_config.yml中这样写123deploy:  type: git  repo">
-<meta property="og:updated_time" content="2017-02-05T14:49:50.437Z">
+<meta property="og:updated_time" content="2017-02-08T07:30:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="换成Hexo">
 <meta name="twitter:description" content="安装Node.js
@@ -332,7 +332,8 @@ npm换源网站
 <p><a href="https://github.com/cnpm/cnpm" target="_blank" rel="external">淘宝推出的cnpm</a></p>
 <p><a href="http://jiji262.github.io/2016/04/15/2016-04-15-hexo-github-pages-blog/" target="_blank" rel="external">安装总结</a>大概四步<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">npm install hexo-cli -g</div><div class="line">hexo init blog</div><div class="line">cd blog</div><div class="line">npm install</div><div class="line">hexo generate</div><div class="line">hexo server -p 3000#因为福昕pdf占用默认的4000端口于是指定3000</div></pre></td></tr></table></figure></p>
 <p>在_config.yml中这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@github.com:jiji262/jiji262.github.io.git</div></pre></td></tr></table></figure></p>
-<p>部署到github可能会有认证问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo deploy</div></pre></td></tr></table></figure></p>
+<p>部署前需要先安装一个插件，部署到github可能会有认证问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div><div class="line">hexo deploy</div></pre></td></tr></table></figure></p>
+<p><a href="http://blog.csdn.net/haidaochen/article/details/8546796" target="_blank" rel="external">对于save选项的解释</a></p>
 <p><a href="https://hexo.io/docs/configuration.html" target="_blank" rel="external">配置_config.yml</a></p>
 <p><a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown" target="_blank" rel="external">github flavored github</a>代码块高亮</p>
 
@@ -361,8 +362,8 @@ npm换源网站
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/09/09/windows切换ip脚本/" rel="next" title="windows切换ip脚本">
-                <i class="fa fa-chevron-left"></i> windows切换ip脚本
+              <a href="/2017/01/18/重装玄学/" rel="next" title="重装玄学">
+                <i class="fa fa-chevron-left"></i> 重装玄学
               </a>
             
           </div>
@@ -371,8 +372,8 @@ npm换源网站
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/01/18/重装玄学/" rel="prev" title="重装玄学">
-                重装玄学 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/01/18/Hexo添加mathjax/" rel="prev" title="Hexo添加mathjax">
+                Hexo添加mathjax <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -434,7 +435,7 @@ npm换源网站
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
