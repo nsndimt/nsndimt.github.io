@@ -1,5 +1,5 @@
-title: Blog
-description: Blogs for nsndimt
-show_downloads: true
+title: Blogs for nsndimt
+description: log research pitfalls
+show_downloads: Flase
 google_analytics:
 theme: jekyll-theme-cayman
