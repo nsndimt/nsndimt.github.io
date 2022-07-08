@@ -2,7 +2,7 @@
 layout: default
 ---
 
-# Indri踩坑
+## Indri踩坑
 
 1. 在[Field](https://sourceforge.net/p/lemur/wiki/Fields/)中dog.title,header被描述为出现在title或header中的dog，但实际上根据[reference](https://sourceforge.net/p/lemur/wiki/Indri%20Query%20Language%20Reference/)中的描述title和dog并非或的关系而是与关系
 2. trectext不一定要按照doc docno的格式可以自定义格式 [参考](https://sourceforge.net/p/lemur/discussion/546029/thread/cea06f6e/) [好像不会自动添加](https://sourceforge.net/p/lemur/discussion/546029/thread/aa0b0575/?limit=25#0ca5)
@@ -10,7 +10,7 @@ layout: default
 4. [beta与dirichlet](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%831) [beta与dirichlet2](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%832) [beta与dirichlet3](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%833) 后验=先验\*似然 若先验后验形式一致则称共轭，但是似然不是教课书上的分布，因为其数据已知而参数未知，与教科书相反。
 5. [beta与dirichlet期望计算](http://xinsong.github.io/2014/04/29/beta/)
 
-# Mose踩坑
+## Mose踩坑
 1. boost在centos6上编译有坑，原因是boost在gcc4.4 .7下编译需要打个[patch](https://svn.boost.org/trac/boost/ticket/11856) P.S red hat centos可以认为是同一个系统。谷歌编译错误要记住两点一在出错时退出二记下错误代号错误发生地点;谷歌时加上gcc版本、系统版本有时有奇效。
 
 2. 编译boost命令
