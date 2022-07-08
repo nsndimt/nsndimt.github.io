@@ -1,59 +1,116 @@
-## Indri踩坑
+# The Cayman theme
 
-1. 在[Field](https://sourceforge.net/p/lemur/wiki/Fields/)中dog.title,header被描述为出现在title或header中的dog，但实际上根据[reference](https://sourceforge.net/p/lemur/wiki/Indri%20Query%20Language%20Reference/)中的描述title和dog并非或的关系而是与关系
-2. trectext不一定要按照doc docno的格式可以自定义格式 [参考](https://sourceforge.net/p/lemur/discussion/546029/thread/cea06f6e/) [好像不会自动添加](https://sourceforge.net/p/lemur/discussion/546029/thread/aa0b0575/?limit=25#0ca5)
-3. 在indri5.10时曾经遇到baseline选项不能为okapi的情况，5.11好像修复了 P.S indri介绍baseline选项的文件不在wiki里在安装文件夹的doc文件中的index里
-4. [beta与dirichlet](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%831)[beta与dirichlet2](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%832)[beta与dirichlet3](http://www.52nlp.cn/lda-math-%E8%AE%A4%E8%AF%86betadirichlet%E5%88%86%E5%B8%833)后验=先验\*似然 若先验后验形式一致则称共轭，但是似然不是教课书上的分布，因为其数据已知而参数未知，与教科书相反。
-5. [beta与dirichlet期望计算](http://xinsong.github.io/2014/04/29/beta/)
+[![.github/workflows/ci.yaml](https://github.com/pages-themes/cayman/actions/workflows/ci.yaml/badge.svg)](https://github.com/pages-themes/cayman/actions/workflows/ci.yaml) [![Gem Version](https://badge.fury.io/rb/jekyll-theme-cayman.svg)](https://badge.fury.io/rb/jekyll-theme-cayman)
 
-## Mose踩坑
-boost在centos6上编译有坑，原因是boost在gcc4.4 .7下编译需要打个[patch](https://svn.boost.org/trac/boost/ticket/11856) P.S red hat centos可以认为是同一个系统。谷歌编译错误要记住两点一在出错时退出二记下错误代号错误发生地点;谷歌时加上gcc版本、系统版本有时有奇效。
+*Cayman is a Jekyll theme for GitHub Pages. You can [preview the theme to see what it looks like](http://pages-themes.github.io/cayman), or even [use it today](#usage).*
 
-编译boost命令
-```       
-/root/boost_1_60_0/bootstrap.sh 
-/root/boost_1_60_0/b2 -q install
-#b2-q选项代表遇到错误退出
+![Thumbnail of Cayman](thumbnail.png)
+
+## Usage
+
+To use the Cayman theme:
+
+1. Add the following to your site's `_config.yml`:
+
+    ```yml
+    remote_theme: pages-themes/cayman@v0.2.0
+    plugins:
+    - jekyll-remote-theme # add this line to the plugins list if you already have one
+    ```
+
+2. Optionally, if you'd like to preview your site on your computer, add the following to your site's `Gemfile`:
+
+    ```ruby
+    gem "github-pages", group: :jekyll_plugins
+    ```
+
+## Customizing
+
+### Configuration variables
+
+Cayman will respect the following variables, if set in your site's `_config.yml`:
+
+```yml
+title: [The title of your site]
+description: [A short description of your site's purpose]
 ```
 
-[irstlm的compile-lm的选项语法](https://github.com/irstlm-team/irstlm/issues/2)
+Additionally, you may choose to set the following optional variables:
 
-[irstlm已经转到github了，虽然谷歌第一位是sf](https://github.com/irstlm-team/irstlm)
-
-[非常好的摩西教程](http://blog.csdn.net/han_xiaoyang/article/details/10101701)  
-
-完整运行命令  
+```yml
+show_downloads: ["true" or "false" (unquoted) to indicate whether to provide a download URL]
+google_analytics: [Your Google Analytics tracking ID]
 ```
-/root/mosesdecoder/scripts/training/clean-corpus-n.perl -ratio 9 align s t  align.clean 1 80
-/root/irstlm/bin/add-start-end.sh <align.t >align.sb.t
-export IRSTLM=/root/irstlm/
-/root/irstlm/bin/build-lm.sh -i align.sb.t -p -s improved-kneser-ney -o align.lm.t --debug
-#脚本只有在DEBUG模式下才能正常运行
-/root/irstlm/bin/compile-lm -text=yes align.lm.t.gz align.arpa.t
-/root/mosesdecoder/bin/build_binary -i align.arpa.t align.blm.t
-/root/mosesdecoder/scripts/training/train-model.perl -cores 24 -root-dir /root/mosesdecoder/ -corpus /root/mosesdecoder/align.clean -f s -e t -alignment grow-diag-final-and -reordering msd-bidirectional-fe -lm 0:3:/root/mosesdecoder/align.blm.t -external-bin-dir /root/giza-pp/
-/root/mosesdecoder/scripts/training/mert-moses.pl /root/mosesdecoder/align.clean.s /root/mosesdecoder/align.clean.t /root/mosesdecoder/bin/moses /root/mosesdecoder/model/moses.ini  --mertdir /root/mosesdecoder/bin/ --decoder-flags="-threads 24"
-/root/mosesdecoder/bin/moses -f /root/mosesdecoder/model/moses.ini
-#多用绝对地址但有时如果示例里用相对地址，那可能作者并没有考虑绝对地址的情况
-#linux中 &> 与 >& 等价，但是后一种真的很少见
-```  
 
-每次实验都要删除所有中间输出否则可能出现如下错误  
-```
-ERROR: target word 118049 is not in the vocabulary list
-WARNING: The following sentence pair has source/target sentence length ration more than the maximum allowed limit for a source word fertility source length = 1 target length = 11 ratio 11 ferility limit : 9
-WARNING: sentence 2176 has alignment point (3, 3) out of bounds (6, 3)
-<<<<<<< HEAD
-```  
+### Stylesheet
 
-如果mert-moses.pl脚本中出错显示
-```
-exec: /root/mosesdecoder/scripts/training/filter-model-given-input.pl ./filtered /root/mosesdecoder/train1/model/moses.ini /root/mosesdecoder/align.clean.s1v
-Executing: /root/mosesdecoder/scripts/training/filter-model-given-input.pl ./filtered /root/mosesdecoder/train1/model/moses.ini /root/mosesdecoder/align.clean.s1v > filterphrases.out 2> filterphrases.err
-Exit code: 1
-ERROR: Failed to run '/root/mosesdecoder/scripts/training/filter-model-given-input.pl ./filtered /root/mosesdecoder/train1/model/moses.ini /root/mosesdecoder/align.clean.s1v'. at /root/mosesdecoder/scripts/training/mert-moses.pl line 1748.
-```  
+If you'd like to add your own custom styles:
 
-很可能是缺少工作路径需要加上--working-dir /root/mosesdecoder/train1[出处](http://blog.sciencenet.cn/blog-200204-205469.html)
+1. Create a file called `/assets/css/style.scss` in your site
+2. Add the following content to the top of the file, exactly as shown:
+    ```scss
+    ---
+    ---
 
-[加入cmph支持](http://www.statmt.org/moses/?n=Advanced.RuleTables)[cmph安装](https://github.com/zvelo/cmph/blob/master/INSTALL)
+    @import "{{ site.theme }}";
+    ```
+3. Add any custom CSS (or Sass, including imports) you'd like immediately after the `@import` line
+
+*Note: If you'd like to change the theme's Sass variables, you must set new values before the `@import` line in your stylesheet.*
+
+### Layouts
+
+If you'd like to change the theme's HTML layout:
+
+1. For some changes such as a custom `favicon`, you can add custom files in your local `_includes` folder. The files [provided with the theme](https://github.com/pages-themes/cayman/tree/master/_includes) provide a starting point and are included by the [original layout template](https://github.com/pages-themes/cayman/blob/master/_layouts/default.html).
+2. For more extensive changes, [copy the original template](https://github.com/pages-themes/cayman/blob/master/_layouts/default.html) from the theme's repository<br />(*Pro-tip: click "raw" to make copying easier*)
+3. Create a file called `/_layouts/default.html` in your site
+4. Paste the default layout content copied in the first step
+5. Customize the layout as you'd like
+
+### Customizing Google Analytics code
+
+Google has released several iterations to their Google Analytics code over the years since this theme was first created. If you would like to take advantage of the latest code, paste it into `_includes/head-custom-google-analytics.html` in your Jekyll site.
+
+### Overriding GitHub-generated URLs
+
+Templates often rely on URLs supplied by GitHub such as links to your repository or links to download your project. If you'd like to override one or more default URLs:
+
+1. Look at [the template source](https://github.com/pages-themes/cayman/blob/master/_layouts/default.html) to determine the name of the variable. It will be in the form of `{{ site.github.zip_url }}`.
+2. Specify the URL that you'd like the template to use in your site's `_config.yml`. For example, if the variable was `site.github.url`, you'd add the following:
+    ```yml
+    github:
+      zip_url: http://example.com/download.zip
+      another_url: another value
+    ```
+3. When your site is built, Jekyll will use the URL you specified, rather than the default one provided by GitHub.
+
+*Note: You must remove the `site.` prefix, and each variable name (after the `github.`) should be indent with two space below `github:`.*
+
+For more information, see [the Jekyll variables documentation](https://jekyllrb.com/docs/variables/).
+
+## Roadmap
+
+See the [open issues](https://github.com/pages-themes/cayman/issues) for a list of proposed features (and known issues).
+
+## Project philosophy
+
+The Cayman theme is intended to make it quick and easy for GitHub Pages users to create their first (or 100th) website. The theme should meet the vast majority of users' needs out of the box, erring on the side of simplicity rather than flexibility, and provide users the opportunity to opt-in to additional complexity if they have specific needs or wish to further customize their experience (such as adding custom CSS or modifying the default layout). It should also look great, but that goes without saying.
+
+## Contributing
+
+Interested in contributing to Cayman? We'd love your help. Cayman is an open source project, built one contribution at a time by users like you. See [the CONTRIBUTING file](docs/CONTRIBUTING.md) for instructions on how to contribute.
+
+### Previewing the theme locally
+
+If you'd like to preview the theme locally (for example, in the process of proposing a change):
+
+1. Clone down the theme's repository (`git clone https://github.com/pages-themes/cayman`)
+2. `cd` into the theme's directory
+3. Run `script/bootstrap` to install the necessary dependencies
+4. Run `bundle exec jekyll serve` to start the preview server
+5. Visit [`localhost:4000`](http://localhost:4000) in your browser to preview the theme
+
+### Running tests
+
+The theme contains a minimal test suite, to ensure a site with the theme would build successfully. To run the tests, simply run `script/cibuild`. You'll need to run `script/bootstrap` once before the test script will work.
