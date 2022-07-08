@@ -47,7 +47,6 @@ export IRSTLM=/root/irstlm/
 ERROR: target word 118049 is not in the vocabulary list
 WARNING: The following sentence pair has source/target sentence length ration more than the maximum allowed limit for a source word fertility source length = 1 target length = 11 ratio 11 ferility limit : 9
 WARNING: sentence 2176 has alignment point (3, 3) out of bounds (6, 3)
-<<<<<<< HEAD
 ```  
 
 8. 如果mert-moses.pl脚本中出错显示
@@ -57,7 +56,6 @@ Executing: /root/mosesdecoder/scripts/training/filter-model-given-input.pl ./fil
 Exit code: 1
 ERROR: Failed to run '/root/mosesdecoder/scripts/training/filter-model-given-input.pl ./filtered /root/mosesdecoder/train1/model/moses.ini /root/mosesdecoder/align.clean.s1v'. at /root/mosesdecoder/scripts/training/mert-moses.pl line 1748.
 ```  
-
-9. 很可能是缺少工作路径需要加上--working-dir /root/mosesdecoder/train1[出处](http://blog.sciencenet.cn/blog-200204-205469.html)
+很可能是缺少工作路径需要加上--working-dir /root/mosesdecoder/train1[出处](http://blog.sciencenet.cn/blog-200204-205469.html)
 
 10. [加入cmph支持](http://www.statmt.org/moses/?n=Advanced.RuleTables)[cmph安装](https://github.com/zvelo/cmph/blob/master/INSTALL)
