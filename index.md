@@ -328,7 +328,7 @@ def minSubArrayLen(self, target: int, nums: List[int]) -> int:
         # when left = right, s must be 0 and the target always > 0
         # left <= right is not needed in this case but is necessary in other cases 
         #窗口合法 → 开始收缩
-        while left <= right and s - nums[left] >= target:
+        while left <= right and s >= target:
             # [left, right] has sum >= target
             # but not every valid window ended with right can enter the loop body
             ans = min(right - left + 1, ans)
