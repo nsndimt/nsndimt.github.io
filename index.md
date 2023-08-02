@@ -3,6 +3,9 @@ title: LeetCode Note for nsndimt
 layout: default
 ---
 
+* TOC
+{:toc}
+
 # Python语言
 - `dims=[state_dim, *dims, action_dim]`构造数组而不是`dims=[state_dim] + dims + [action_dim]`
 - 二维数组创建和下标访问就用`[[0]*1000 for i in range(1000)]`可以了除非有向量化运算才用`numpy`
@@ -49,6 +52,7 @@ layout: default
         - [k for k, g in groupby('AAAABBBCCDAABBB')] --> A B C D A B
         - [list(g) for k, g in groupby('AAAABBBCCD')] --> AAAA BBB CC D
 - You need to use nonlocal whenever you want to assign to a nonlocal variable in a local scope, exactly analogous to global
+
 # 排序
 - 大部分有序排序
 	- 1、最理想情况（数据预先已排好序），插入和冒泡都只需要进行n次循环和比较就结束了，不需要进行数据交换（传值），而选择要进行(n^2)/2次循环和比较，显然选择明显落后于冒泡和插入
@@ -57,7 +61,8 @@ layout: default
 - 前K大 1. 冒泡 K 遍 2. 维护大小为K最大堆 3.快排
 - 第K大 1. 快排
 - 逆序对: 归并排序
-```Python
+
+```python
 def bubblesort(arr):
     swapped = False
     for n in range(len(arr) - 1, 0, -1):
@@ -198,8 +203,10 @@ def topKlargest(arr, k):
         else:
             right = p - 1
 ```
+
 - `cmp_to_key` 定义复杂顺序 `operator.itemgetter`替代lambda
-```Python
+
+```python
 def cmp(a, b):
     if a[0] > b[0]:
         return 1
@@ -210,8 +217,10 @@ def cmp(a, b):
 
 sorted([(1, 2), (4, 2)], key=functools.cmp_to_key(cmp)))
 ```
+
 - 自定义`heapq`和`SortedContainer`比较函数
-```Python
+
+```python
 class Node:
     def __init__(self, val: int):
         self.val = val
@@ -229,8 +238,10 @@ heap = [Node(2), Node(0), Node(1), Node(4), Node(2)]
 heapq.heapify(heap)
 print(heap)  # output: [Node value: 0, Node value: 2, Node value: 1, Node value: 4, Node value: 2]
 ```
+
 # 前缀和 差分
-```Python 
+
+```python 
 prefixsum = [0] + list(accumulate(arr))
 def query(i, j):
     # 查询的是双闭区间[i, j]的区间和
@@ -256,8 +267,9 @@ def recover():
     return res
 ```
 # 树状数组
-![image](https://github.com/nsndimt/leetcode/assets/8330249/9ec0c66e-7341-4e82-8231-7fa2597dec90)
-```Python
+![image](/assets/array_tree.png)
+
+```python
 def lowbit(x):
     """
     x 的二进制中，最低位的 1 以及后面所有 0 组成的数。
@@ -295,13 +307,16 @@ class NumArray:
     def sumRange(self, left: int, right: int) -> int:
         return self.prefix_sum(right+1) - self.prefix_sum(left)
 ```
+
 # 双指针 滑动窗口
+
 - 寻找单调性进行优化O(N^2) 循环
   - 同向双指针 纯靠模拟 拿出笔来 注意边界条件 子数组 子序列
   - 对向双指针
 - 快慢指针
 - 分组循环
-```Python
+
+```python
 #同向双指针 求最小窗口 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
     n = len(nums)
@@ -357,8 +372,10 @@ def alternatingSubarray(self, nums: List[int]) -> int:
             start = end
     return ans
 ```
+
 # 二分
-```Python
+
+```python
 def lastlessequal(arr, v):
     left = -1
     right = len(arr)
@@ -416,6 +433,7 @@ def equal(arr, v):
             right = mid
     return -1
 ```
+
 - 核心要素: 区间染色 红，蓝，未知
     - 注意区间开闭，三种都可以
     - 循环结束条件：当前区间内没有元素
@@ -466,8 +484,10 @@ def equal(arr, v):
 - 因为未检查区间 $(left, right]$ 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
 
 # 递归
+
 ## 子集型
-```Python
+
+```python
 # 单个元素的视角 选或不选
 def subsets(self, nums: List[int]) -> List[List[int]]:
     ans = []
@@ -501,8 +521,10 @@ def subsets(self, nums: List[int]) -> List[List[int]]:
     dfs(0)
     return ans
 ```
+
 ## 组合型
-```Python
+
+```python
 # 单个元素的视角 选或不选
 def combine(self, nums: List[int], k: int) -> List[List[int]]:
     ans = []
@@ -542,8 +564,10 @@ def combine(self, nums: List[int], k: int) -> List[List[int]]:
     dfs(0)
     return ans
 ```
+
 ## 排列
-```Python
+
+```python
 def permute(self, nums: List[int]) -> List[List[int]]:
     n = len(nums)
     ans = []
@@ -563,9 +587,12 @@ def permute(self, nums: List[int]) -> List[List[int]]:
     dfs(0)
     return ans
 ```
+
 # 数学
+
 ## 数论
-```Python
+
+```python
 def gcd(x, y):
     while y != 0:
         x, y = y, x % y
@@ -626,8 +653,10 @@ def prime(n):
                 flag[j] = False
     return [i for i, isprime in enumerate(flag) if isprime]
 ```
+
 ## 博弈
-```Python
+
+```python
 @cache
 def dfs(s):
     pos_a = []
@@ -648,8 +677,10 @@ def dfs(s):
         else:
             return True # always win when at least one next state is alway lose
 ```
+
 ## 几何
-```Python
+
+```python
 def dont_overlap(x1, y1, x2, y2):
     return x2 < y1 or x1 > y2
 
@@ -672,11 +703,16 @@ def merge(intervals):
             res.append(curr)
     return res
 ```
+
 # DP
+
 ## 状压DP
+
 参考[https://leetcode.cn/circle/discuss/CaOJ45/]
+
 ## 数位DP
-```Python
+
+```python
 def countSpecialNumbers(self, n: int) -> int:
     s = str(n)
     
@@ -696,40 +732,34 @@ def countSpecialNumbers(self, n: int) -> int:
     
     return f(0, 0, True, False)
 ```
+
 ## 背包
 - 求max/min的模型里：
-	- 求体积`恰好`为j：
-	- 求max, f = 【0】+【-inf】*t
-	- 求min, f = 【0】+【inf】*t
+	- 求体积**恰好**为j：
+	- 求max, f = 【0】+【-inf】\* t
+	- 求min, f = 【0】+【inf】\* t
 	- 最终f【j】代表体积恰好为j时的价值极值。
-	---
-	- 求体积`至多`为j时:
-	- f【0】 = 【0】+【0】*t  (max/min)
-	- 最终f【j】代表体积`至多`为j时的价值极值
-	---
-	- 求体积`至少`为j时:
-	- f【0】 = 【0】+【0】*t  (max/min)
-	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即
-		`for j in range(self.vol, -1, -1):f【j】 = merge(f【j】, f【max(j - v,0)】 + w)  # 01背包`  
-		`for j in range(self.vol+1):f【j】 = merge(f【j】, f【max(j - v,0)】 + w)  # 完全背包`  
-	- 最终f【j】代表体积`至少`为j时的价值极值
---- 
+	- 求体积**至多**为j时:
+	- f【0】 = 【0】+【0】\* t  (max/min)
+	- 最终f【j】代表体积**至多**为j时的价值极值
+	- 求体积**至少**为j时: f【0】 = 【0】+【0】\* t  (max/min)
+	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为
+`for j in range(self.vol, -1, -1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`完全背包改为
+`for j in range(self.vol+1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`  
+	- 最终f【j】代表体积**至少**为j时的价值极值
 - 求方案数的模型里（一般要取模）:
-	- 求体积`恰好`为j：
-	- 求max, f = 【1】+【0】*t
+	- 求体积**恰好**为j：
+	- 求max, f = 【1】+【0】\* t
 	- 最终f【j】代表体积恰好为j时的方案数。
-	---
-	- 求体积`至多`为j时:
-	- f = 【1】+【1】*t  
+	- 求体积**至多**为j时:
+	- f = 【1】+【1】\* t  
 	- 最终f【j】代表体积`至多`为j时的方案数。
-	---
-	- 求体积`至少`为j时:
-	- f = 【1】+【0】*t 
-	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即
-		`for j in range(self.vol, -1, -1):f【j】 += f【max(j - v,0)】  # 01背包`  
-		`for j in range(self.vol+1):f【j】 += f【max(j - v,0)】  # 完全背包`  
-	- 最终f【j】代表体积`至多少`为j时的方案数
-```Python
+	- 求体积**至少**为j时:
+	- f = 【1】+【0】\* t 
+	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为`for j in range(self.vol, -1, -1):f【j】 += f【max(j - v,0)】` 完全背包改为`for j in range(self.vol+1):f【j】 += f【max(j - v,0)】`  
+	- 最终f【j】代表体积至多少为j时的方案数
+
+```python
 @cache
 def complete_backpack(i, target):
     if i < 0:
@@ -767,8 +797,10 @@ for i, n in enumerate(nums):
         else:
             dp[i+1][c] = dp[i][c] + dp[i][c-n]
 ```
+
 # 字符串
-```Python
+
+```python
 str.split(sep=',', maxsplit=1)
 # maxsplit control split times
 
@@ -840,8 +872,10 @@ def kmp_search(text, pattern):
     return indices
 
 ```
+
 # 前缀树
-```Python
+
+```python
 class TrieNode:
     def __init__(self, char):
         self.val = char
@@ -870,8 +904,10 @@ class Trie:
             curr = curr.edges[char]
         return curr.is_word_end
 ```
+
 # 单调栈 单调队列
-```Python
+
+```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
 # find the previous less element of each element in a vector with O(n) time
 s = deque()
@@ -900,8 +936,10 @@ for i in range(len(nums)):
     if i >= k - 1:
         res.append(nums[dq[0]])
 ```
+
 # 并查集
-```Python
+
+```python
 class DisjointSet:
     def __init__(self, n):
         # number of components
@@ -931,8 +969,10 @@ class DisjointSet:
             self.rank[rootP] += 1
         self.count -= 1
 ```
+
 # 图
-```Python
+
+```python
 def topologicalSort():
     indegree = [0] * numCourses
     adj = defaultdict(list)
@@ -1014,7 +1054,9 @@ def dijkstra(s):
                 dis[v] = dis[u] + w
                 heapq.heappush(q, (dis[v], v))
 ```
+
 # BST
+
 - C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
 - 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度log(n)
 - `SortedList`用起来和List差不多

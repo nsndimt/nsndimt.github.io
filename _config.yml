@@ -1,5 +1,10 @@
 title: Blogs for nsndimt
-description: 没空更新了，挂在这只为google能索引到我写的indri踩坑记录，特别是关于中文伪反馈的坑，但愿能够帮到一些人
+description:
 show_downloads: False
 google_analytics:
 theme: jekyll-theme-cayman
+markdown: kramdown
+highlighter: rouge
+kramdown:
+    input: GFM
+    syntax_highlighter: rouge
