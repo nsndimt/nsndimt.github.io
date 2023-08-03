@@ -10,20 +10,20 @@ layout: default
 - `dims=[state_dim, *dims, action_dim]`构造数组而不是`dims=[state_dim] + dims + [action_dim]`
 - 二维数组创建和下标访问就用`[[0]*1000 for i in range(1000)]`可以了除非有向量化运算才用`numpy`
 - `a, b = a + b, a - b` 的计算顺序为：
-	- a + b
-	- a - b
+	- `a + b`
+	- `a - b`
 	- 赋值 a
 	- 赋值 b
 - `a = b = 1 + 1` 的计算顺序为：
-	- 1 + 1
+	- `1 + 1`
 	- 赋值 a
 	- 赋值 b
  - if `i < len(arr) and arr[i] > 0` 的计算顺序为：
-     -  i < len(arr)
-     -  arr[i] > 0 如果第一个条件为假则不计算(short circuiting)
+     -  `i < len(arr)``
+     -  `arr[i] > 0` 如果第一个条件为假则不计算(short circuiting)
 - `a <= b <= c` 的计算顺序为：
-	- a <= b
-	- b <= c
+	- `a <= b`
+	- `b <= c`
 - `max(iterable, *, default=obj, key=None)` 和 `max(iterable, *, default=obj, key=None)`
     - default指定iterable为空时返回值
     - key指定比较值
@@ -49,9 +49,10 @@ layout: default
     - `combinations_with_replacement('ABCD', 2)` --> AA AB AC AD BB BC BD CC CD DD
     - `islice(iterable, start, stop[, step])` `arr[start:end:step]` O(end-start)
     - `groupby(iterable, key=None)`
-        - [k for k, g in groupby('AAAABBBCCDAABBB')] --> A B C D A B
-        - [list(g) for k, g in groupby('AAAABBBCCD')] --> AAAA BBB CC D
-- You need to use nonlocal whenever you want to assign to a nonlocal variable in a local scope, exactly analogous to global
+        - ``[k for k, g in groupby('AAAABBBCCDAABBB')]`` --> A B C D A B
+        - ``[list(g) for k, g in groupby('AAAABBBCCD')]`` --> AAAA BBB CC D
+- nonlocal声明只在当对函数外部mutable变量赋值时必须: 在Python 2中，闭包只能读外部函数的变量，而不能改写它。为了解决这个问题，Python 3引入了nonlocal关键字，在闭包内用nonlocal声明变量，就可以让解释器在外层函数中查找变量名。
+- Python里只有2种作用域：全局作用域和局部作用域。全局作用域是指当前代码所在模块的作用域，局部作用域是指当前函数或方法所在的作用域。局部作用域里的代码可以读包括全局作用域里的变量，但不能更改它。如果想更改它，这里就要使用global关键字了
 
 # 排序
 - 大部分有序排序
@@ -268,27 +269,37 @@ diff = [arr[0]] + [arr[i] - arr[i - 1] for i in range(1, len(arr))]
 def modify(i, j, value):
     # 取[i~j]的双闭区间进行区间修改
     diff[i] += value  # 复原时, arr[i]之后的数都会 + value
-    if j + 1 < len(self.diff):
-        self.diff[j + 1] -= value
+    if j + 1 < len(diff):
+        diff[j + 1] -= value
 # 一连串的modify最后recover
 def recover():
     # 复原修改后的数组
-    res = [self.diff[0]]
-    for i in range(1, len(self.diff)):
-        res.append(res[-1] + self.diff[i])
+    res = [diff[0]]
+    for i in range(1, len(diff)):
+        res.append(res[-1] + diff[i])
     return res
+
+def checkArray(self, nums: List[int], k: int) -> bool:
+    n = len(nums)
+    d = [0] * (n + 1)
+    sum_d = 0
+    for i, x in enumerate(nums):
+        sum_d += d[i]
+        x += sum_d
+        if x == 0: continue  # 无需操作
+        if x < 0 or i + k > n: return False  # 无法操作
+        sum_d -= x  # 直接加到 sum_d 中
+        d[i + k] += x
+    return True
+
 ```
 # 树状数组
 ![image](/assets/array_tree.png)
 
 ```python
-def lowbit(x):
-    """
-    x 的二进制中，最低位的 1 以及后面所有 0 组成的数。
-    lowbit(0b01011000) == 0b00001000
-    lowbit(0b01110010) == 0b00000010
-    """
-    return x & -x
+# lowbit: x 的二进制中，最低位的 1 以及后面所有 0 组成的数
+# -x: 补码定义 最低1左侧取反，右侧不变
+# x & -x
 
 class NumArray:
 
@@ -451,13 +462,17 @@ def equal(arr, v):
     - 循环结束条件：当前区间内没有元素
     - 下一次二分查找区间：不能再查找(区间不包含)mid，防止死循环 => 区间恒缩小
     - 判断条件，返回值：取决于寻找什么 和区间开闭无关
-  
+
+## 二分和bisect关系  
+
 | position            | bisect                          | minium possible value | maxium possible value |
 | -----------         | -----------                     | -----------           | -----------           |
 | last less or equal  | bisect.bisect_right(arr, v) - 1 | -1 (not find)         | len(arr) - 1          |
 | first great         | bisect.bisect_right(arr, v)     | -1                    | len(arr) (not find)   |
 | last less           | bisect.bisect_left(arr, v) - 1  | -1 (not find)         | len(arr) - 1          |
 | first great or equal| bisect.bisect_right(arr, v)     | -1                    | len(arr) (not find)   |
+
+## 循环不变量
 
 | position            | if condition    | return                       | red         | blue        |
 | -----------         | -----------     | -----------                  | ----------- | ----------- |
@@ -468,32 +483,32 @@ def equal(arr, v):
 | equal               | arr[mid] <> v   | -1 all colored => not found  | < v         | >=v         |
 
 ## 开区间
-- 因为未检查区间 $(left, right)$ 为开区间 所以`left = -1; right = len(arr)`
-- 红区间: $[0, left]$ 蓝区间: $[right, len(arr) - 1]$
-- 因为未检查区间 $(left, right)$ 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
+- 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
+- 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
+- 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
 - `left = -1; right = 1` => `mid = (left + right) // 2`
-- 因为未检查区间 $(left, right)$ 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
+- 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
 
 ## 左闭右开区间
-- 因为未检查区间 $[left, right)$ 为左闭右开区间 所以`left = 0; right = len(arr)`
-- 红区间: $[0, left)$ 蓝区间: $[right, len(arr) - 1]$
-- 因为未检查区间 $[left, right)$ 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
+- 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
+- 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
+- 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
 - `left = 0; right = 1` => `mid = (left + right) // 2`
-- 因为未检查区间 $[left, right)$ 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
+- 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
 
 ## 闭区间
-- 因为未检查区间 $[left, right]$ 为闭区间 所以`left = 0; right = len(arr) - 1`
-- 红区间: $[0, left)$ 蓝区间: $(right, len(arr) - 1]$
-- 因为未检查区间 $[left, right]$ 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
+- 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
+- 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
+- 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
 - `left = 0; right = 0` => `mid = (left + right) // 2`
-- 因为未检查区间 $[left, right]$ 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
+- 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
 
 ## 左开右闭区间
-- 因为未检查区间 $(left, right]$ 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
-- 红区间: $[0, left]$ 蓝区间: $(right, len(arr) - 1]$
-- 因为未检查区间 $(left, right]$ 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
+- 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
+- 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
+- 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
 - `left = -1; right = 0` => `mid = (left + right + 1) // 2`
-- 因为未检查区间 $(left, right]$ 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
+- 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
 
 # 递归
 
@@ -767,7 +782,71 @@ def getPermutation(self, n: int, k: int) -> str:
 
 ## 状压DP
 
-参考[https://leetcode.cn/circle/discuss/CaOJ45/]
+```python
+#全集 设元素范围从 0 到 3
+(1 << 4) − 1
+
+#属于
+(1101 >> 2) & 1 == 1
+
+#不属于
+(1101 >> 2) & 1 == 0
+
+#删除元素
+1001 ∣ (1 << 2)
+
+#删除元素
+1101& ~(1 << 2)
+
+# 删除最小元素
+s # 101100
+s-1 # 101011 # 最低位的 1 变成 0，同时 1 右边的 0 都取反，变成 1
+s&(s-1) # 101000
+
+s.bit_count() # 集合大小（元素个数）
+
+s.bit_length() # 二进制长度（减一得到集合中的最大元素)
+
+(s&-s).bit_length()-1 # 集合中的最小元素
+
+# 只包含最小元素的子集，即二进制最低1及其后面的0，也叫 lowbit，可以用 s & -s 算出。举例说明：
+s # 101100
+~s # 010011
+(~s)+1 # 010100 根据补码的定义，这就是 -s  最低1左侧取反，右侧不变
+s & -s # 000100 lowbit
+
+# 设元素范围从 0 到 n −1 挨个判断每个元素是否在集合 s 中：
+for i in range(n):
+    if (s >> i) & 1:  # i 在 s 中
+        # 处理 i 的逻辑
+
+# 设元素范围从 0 到 n −1 从空集枚举到全集
+for s in range(1 << n):
+    # 处理 s 的逻辑
+
+# 从大到小枚举 s 的所有非空子集
+# 简单减一不行10101→10100→10011(不是子集)
+# 我们要做的相当于「压缩版」的二进制减法 10101→10100→10001→10000→00101
+# 忽略掉 10101中的两个 0，数字的变化和二进制减法是一样的，即111→110→101→100→011
+# 如何快速找到下一个子集呢？以10100→10001为例说明
+# 普通的二进制减法会把最低位的1变成0，同时1右边的0变成1，即 10100→10011
+# 「压缩版」的二进制减法也是类似的，把最低位的1变成0，但同时对于1右边的0只保留在s=10101中的1
+# 所以是 10100→10001 怎么保留？&10101就行。
+sub = s
+while sub:
+    # 处理 sub 的逻辑
+    sub = (sub - 1) & s
+
+# Gosper's Hack
+# 生成n元集合所有 k元子集的算法
+s = (1 << k) - 1
+while s < (1 << n):
+    bits = [i for i, c in enumerate(bin(s)[:1:-1]) if c == '1']
+    # bits存储所有不为零的位置
+    lb = s & -s
+    x = s + lb
+    s = (s ^ x) // lb >> 2 | x
+```
 
 ## 数位DP
 
@@ -793,30 +872,8 @@ def countSpecialNumbers(self, n: int) -> int:
 ```
 
 ## 背包
-- 求max/min的模型里：
-	- 求体积**恰好**为j：
-	   - 求max, f【0】 = 【0】+【-inf】\* t
-	   - 求min, f【0】 = 【0】+【inf】\* t
-	   - 最终f【j】代表体积恰好为j时的价值极值。
-	- 求体积**至多**为j时:
-	   - f【0】 = 【0】+【0】\* t  (max/min)
-	   - 最终f【j】代表体积**至多**为j时的价值极值
-	- 求体积**至少**为j时: f【0】 = 【0】+【0】\* t  (max/min)
-	   - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为
-`for j in range(self.vol, -1, -1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`完全背包改为
-`for j in range(self.vol+1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`  
-	   - 最终f【j】代表体积**至少**为j时的价值极值
-- 求方案数的模型里（一般要取模）:
-	- 求体积**恰好**为j：
-	   - 求max, f【0】 = 【1】+【0】\* t
-	   - 最终f【j】代表体积恰好为j时的方案数。
-	- 求体积**至多**为j时:
-	   - f【0】 = 【1】+【1】\* t  
-	   - 最终f【j】代表体积`至多`为j时的方案数。
-	- 求体积**至少**为j时:
-	   - f【0】 = 【1】+【0】\* t 
-	   - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为`for j in range(self.vol, -1, -1):f【j】 += f【max(j - v,0)】` 完全背包改为`for j in range(self.vol+1):f【j】 += f【max(j - v,0)】`  
-	   - 最终f【j】代表体积至多少为j时的方案数
+
+- 学会一维数组方案， 极大节省时间:
 
 ```python
 def findTargetSumWays(self, nums: List[int], target: int) -> int:
@@ -904,13 +961,18 @@ def coinChange(self, coins: List[int], amount: int) -> int:
 
     for i, n in enumerate(coins):
         # 如果是range(1, amount+1), 那么用前i构成的恰好为cost的可行解就被跳过
-        for c in range(amount+1):
-            if c < n:
-                # dp[i+1][c] = dp[i][c]
-                dp[c] = dp[c]
-            else:
-                # dp[i+1][c] = dp[i][c] + dp[i+1][c-n]
-                dp[c] = min(dp[c], dp[c-n]+1)
+        # for c in range(amount+1):
+        #     if c < n:
+        #         dp[i+1][c] = dp[i][c]
+        #     else:
+        #         dp[i+1][c] = dp[i][c] + dp[i+1][c-n]
+        # for c in range(amount+1):
+        #     if c < n:
+        #         dp[c] = dp[c]
+        #     else:
+        #         dp[c] = min(dp[c], dp[c-n]+1)
+        for c in range(n, amount+1):
+            dp[c] = min(dp[c], dp[c-n]+1)
     # ans = dp[-1][-1]
     ans = dp[-1]
     ans = ans if ans != 1<<31 else -1
@@ -919,6 +981,91 @@ def coinChange(self, coins: List[int], amount: int) -> int:
 # 多重背包 每种物品有 k_i 个
 # 二进制分组优化 把多重背包转化成 0-1 背包模型来求解
 # 一个物品可以选7次 =》 可以选 1个物品 2个物品 4个物品 至多一次
+```
+
+- 求max/min的模型里：
+    - 求体积**恰好**为j：
+        - 求max, dp【0】 = 【0】+【-inf】\* t
+        - 求min, dp【0】 = 【0】+【inf】\* t
+        - 最终f【j】代表体积恰好为j时的价值极值。
+    - 求体积**至多**为j时:
+        - dp【0】 = 【0】+【0】\* t
+        - 最终f【j】代表体积至多为j时的价值最大值
+    - 求体积**至少**为j时:
+        - dp【0】 = 【0】+【inf】\* t
+        - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v)
+        - 最终f【j】代表体积至少为j时的价值最小值
+        - f【0】始终为0
+
+```python
+#01背包改为
+@cache
+def dp(i, target):
+    if i < 0:
+        return 0 if target <= 0 else 1<<31
+    else:
+        return min(dp(i - 1, target - coins[i]) + 1, dp(i - 1, target))
+
+dp = [1<<31] * (amount + 1)
+dp[0] = 0
+for i, n in enumerate(coins):
+    for c in range(amount, -1, -1):
+        dp[c] = min(dp[c], dp[max(c-n, 0)] + 1)
+#完全背包改为
+@cache
+def dp(i, target):
+    if i < 0:
+        return 0 if target <= 0 else 1<<31
+    else:
+        return min(dp(i, target - coins[i]) + 1, dp(i - 1, target))
+
+dp = [1<<31] * (amount + 1)
+dp[0] = 0
+for i, n in enumerate(coins):
+    for c in range(amount+1):
+        dp[c] = min(dp[c], dp[max(c-n, 0)] + 1)
+```
+- 求方案数的模型里（一般要取模）:
+    - 求体积**恰好**为j：
+       - 求max, f【0】 = 【1】+【0】\* t
+       - 最终f【j】代表体积恰好为j时的方案数。
+    - 求体积**至多**为j时:
+       - f【0】 = 【1】+【1】\* t  
+       - 最终f【j】代表体积至多为j时的方案数。
+    - 求体积**至少**为j时:
+       - f【0】 = 【1】+【0】\* t 
+       - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v)
+        - 最终f【j】代表体积至少为j时的方案数
+        - f【0】始终为0
+
+```python
+# 01背包改为
+@cache
+def dp(i, target):
+    if i < 0:
+        return 1 if target <= 0 else 0
+    else:
+        return dp(i - 1, target - coins[i]) + 1 + dp(i - 1, target)
+
+dp = [0] * (amount + 1)
+dp[0] = 1
+for i, n in enumerate(coins):
+    for c in range(amount, -1, -1):
+        dp[c] = dp[c] + dp[max(c-n, 0)] + 1
+#完全背包改为
+@cache
+def dp(i, target):
+    if i < 0:
+        return 1 if target <= 0 else 0
+    else:
+        return dp(i, target - coins[i]) + 1 + dp(i - 1, target)
+
+dp = [0] * (amount + 1)
+dp[0] = 1
+for i, n in enumerate(coins):
+    for c in range(amount+1):
+        dp[c] = dp[c] + dp[max(c-n, 0)] + 1
+ans = dp[-1]
 ```
 
 # 字符串
@@ -1147,10 +1294,17 @@ for u, v, w in edges:
 dis = [(1<<31)] * n
 dis[s] = 0
 for i in range(n):
+    flag = False
     for u in adj:
         for v, w in adj[u]:
             if dis[v] > dis[u] + w:
                 dis[v] = dis[u] + w
+                flag = True
+    # 没有可以松弛的边时就停止算法
+    if flag == False:
+        break
+    # 第 n 轮循环仍然可以松弛时说明 s 点可以抵达一个负环
+return flag
 
 # Bellman-Ford + 队列优化 => spfa
 dis = [(1<<31)] * n
