@@ -79,7 +79,7 @@ def selectionSort(arr):
         for j in range(idx + 1, len(arr)):
             if array[j] < min_v:
                 min_v, min_idx = array[j], j
-        arr[idx], arr[min_idx]) = arr[min_idx], array[idx]
+        arr[idx], arr[min_idx] = arr[min_idx], array[idx]
 
 def insertionSort(arr):
     for i, key in enumerate(arr):
@@ -215,7 +215,7 @@ def cmp(a, b):
     else:
         return 0
 
-sorted([(1, 2), (4, 2)], key=functools.cmp_to_key(cmp)))
+sorted([(1, 2), (4, 2)], key=functools.cmp_to_key(cmp))
 ```
 
 - 自定义`heapq`和`SortedContainer`比较函数
@@ -246,6 +246,18 @@ prefixsum = [0] + list(accumulate(arr))
 def query(i, j):
     # 查询的是双闭区间[i, j]的区间和
     return prefixsum[j+1] - prefixsum[i]
+
+# 动态建立前缀和
+def subarraySum(self, nums: List[int], k: int) -> int:
+    n = len(nums)
+    s = 0
+    ans = 0
+    prefix_sum_cnt = Counter([0])
+    for num in nums:
+        s = s + num
+        ans += prefix_sum_cnt[s - k]
+        prefix_sum_cnt[s] += 1
+    return ans
 
 suffixsum = list(accumulate(arr)) + [0]
 def query(i, j):
@@ -347,12 +359,12 @@ def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
         #窗口非法 → 开始收缩
         while left <= right:
             if p < k:
-                # have finded every valid largest window ended with right
+                # have found every valid largest window ended with right
                 ans += right - left + 1
                 break
             p //= nums[left]
             left += 1
-    return and
+    return ans
 
 def alternatingSubarray(self, nums: List[int]) -> int:
     n = len(nums)
@@ -704,6 +716,53 @@ def merge(intervals):
     return res
 ```
 
+## 排列
+
+```python
+def nextPermutation(self, nums: List[int]) -> None:
+    """
+    Do not return anything, modify nums in-place instead.
+    """
+    n = len(nums)
+    if n == 1: return
+    i = n - 2
+    while i >= 0 and nums[i] >= nums[i+1]:
+        i -= 1
+    if i == -1:
+        start = 0
+        end = n - 1
+        while start < end:
+            nums[start], nums[end] = nums[end], nums[start]
+            start += 1
+            end -= 1
+    else:
+        j = n - 1
+        while nums[j] <= nums[i]:
+            j -= 1 
+        
+        nums[i], nums[j] = nums[j], nums[i]
+
+        start = i + 1
+        end = n - 1
+        while start < end:
+            nums[start], nums[end] = nums[end], nums[start]
+            start += 1
+            end -= 1
+
+def getPermutation(self, n: int, k: int) -> str:
+    f = [1]
+    for i in range(1, n):
+        f.append(f[-1]*i)
+    digits = list(range(1, n+1))
+    ans = []
+    for i in range(n):
+        drank = (k - 1) // f[n-1-i]
+        k -= drank * f[n-1-i]
+        # print(drank, f[n-1-i])
+        ans.append(str(digits.pop(drank)))
+        # print(ans)
+    return "".join(ans)
+```
 # DP
 
 ## 状压DP
@@ -736,66 +795,130 @@ def countSpecialNumbers(self, n: int) -> int:
 ## 背包
 - 求max/min的模型里：
 	- 求体积**恰好**为j：
-	- 求max, f = 【0】+【-inf】\* t
-	- 求min, f = 【0】+【inf】\* t
-	- 最终f【j】代表体积恰好为j时的价值极值。
+	   - 求max, f【0】 = 【0】+【-inf】\* t
+	   - 求min, f【0】 = 【0】+【inf】\* t
+	   - 最终f【j】代表体积恰好为j时的价值极值。
 	- 求体积**至多**为j时:
-	- f【0】 = 【0】+【0】\* t  (max/min)
-	- 最终f【j】代表体积**至多**为j时的价值极值
+	   - f【0】 = 【0】+【0】\* t  (max/min)
+	   - 最终f【j】代表体积**至多**为j时的价值极值
 	- 求体积**至少**为j时: f【0】 = 【0】+【0】\* t  (max/min)
-	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为
+	   - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为
 `for j in range(self.vol, -1, -1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`完全背包改为
 `for j in range(self.vol+1): f【j】 = merge(f【j】, f【max(j - v,0)】 + w)`  
-	- 最终f【j】代表体积**至少**为j时的价值极值
+	   - 最终f【j】代表体积**至少**为j时的价值极值
 - 求方案数的模型里（一般要取模）:
 	- 求体积**恰好**为j：
-	- 求max, f = 【1】+【0】\* t
-	- 最终f【j】代表体积恰好为j时的方案数。
+	   - 求max, f【0】 = 【1】+【0】\* t
+	   - 最终f【j】代表体积恰好为j时的方案数。
 	- 求体积**至多**为j时:
-	- f = 【1】+【1】\* t  
-	- 最终f【j】代表体积`至多`为j时的方案数。
+	   - f【0】 = 【1】+【1】\* t  
+	   - 最终f【j】代表体积`至多`为j时的方案数。
 	- 求体积**至少**为j时:
-	- f = 【1】+【0】\* t 
-	- 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为`for j in range(self.vol, -1, -1):f【j】 += f【max(j - v,0)】` 完全背包改为`for j in range(self.vol+1):f【j】 += f【max(j - v,0)】`  
-	- 最终f【j】代表体积至多少为j时的方案数
+	   - f【0】 = 【1】+【0】\* t 
+	   - 同时遍历体积需要修改循环下界v->0、转移需要修改为从max(0,j-v),即01背包改为`for j in range(self.vol, -1, -1):f【j】 += f【max(j - v,0)】` 完全背包改为`for j in range(self.vol+1):f【j】 += f【max(j - v,0)】`  
+	   - 最终f【j】代表体积至多少为j时的方案数
 
 ```python
-@cache
-def complete_backpack(i, target):
-    if i < 0:
-        return 0 if target == 0 else 1000000
-    else:
-        if target < coins[i]:
-            return complete_backpack(i - 1, target)
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+    total = sum(nums)
+    if (total + target) < 0 or (total + target) % 2 == 1:
+        return 0
+    
+    p_target = (total + target) // 2
+    
+    @cache
+    def dp(i, target):
+        if i < 0:
+            return 1 if target == 0 else 0
         else:
-            return min(complete_backpack(i, target - coins[i]) + 1, complete_backpack(i - 1, target))
+            if target < nums[i]:
+                return dp(i - 1, target)
+            else:
+                return dp(i - 1, target - nums[i]) + dp(i - 1, target)
 
-dp = [[0]+[1000000] * amount for i in range(n+1)]
-for i, n in enumerate(coins):
-    for c in range(amount+1):
-        if c < n:
-            dp[i+1][c] = dp[i][c]
-        else:
-            dp[i+1][c] = min(dp[i][c], dp[i+1][c-n]+1)
+    ans = dp(len(nums) - 1, p_target)
+    return ans
 
-@cache
-def zero_one_backpack(i, target):
-    if i < 0:
-        return 1 if target == 0 else 0
-    else:
-        if target < nums[i]:
-            return zero_one_backpack(i - 1, target)
-        else:
-            return zero_one_backpack(i - 1, target - nums[i]) + zero_one_backpack(i - 1, target)
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+    total = sum(nums)
+    if (total + target) < 0 or (total + target) % 2 == 1:
+        return 0
+    
+    p_target = (total + target) // 2
+    
+    n = len(nums)
+    # dp = [[0]*(p_target+1) for i in range(n+1)]
+    # dp = [[0]*(p_target+1) for i in range(2)]
+    # dp[0][0] = 1
+    dp = [0]*(p_target+1)
+    dp[0] = 1
 
-dp = [[1]+[0]*p_target for i in range(n+1)]
-for i, n in enumerate(nums):
-    # 如果是range(1, target+1), 那么用前i构成的恰好为cost的可行解就被跳过
-    for c in range(target+1):
-        if c < n:
-            dp[i+1][c] = dp[i][c]
+    for i, n in enumerate(nums):
+        # for c in range(p_target+1):
+        #     if c < n:
+        #         dp[i+1][c] = dp[i][c]
+        #     else:
+        #         dp[i+1][c] = dp[i][c] + dp[i][c-n]
+        # for c in range(p_target+1):
+        #     if c < n:
+        #         dp[(i+1)%2][c] = dp[i%2][c]
+        #     else:
+        #         dp[(i+1)%2][c] = dp[i%2][c] + dp[i%2][c-n]
+        # for c in range(p_target, -1, -1):
+        #     if c < n:
+        #         dp[c] = dp[c]
+        #     else:
+        #         dp[c] = dp[c] + dp[c-n]
+        for c in range(p_target, n-1, -1):
+            dp[c] = dp[c] + dp[c-n]
+    # print(dp)
+    # ans = dp[-1][-1]
+    ans = dp[-1]
+    return ans
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+    n = len(coins)
+    
+    @cache
+    def dp(i, target):
+        if i < 0:
+            return 0 if target == 0 else 1<<31
         else:
-            dp[i+1][c] = dp[i][c] + dp[i][c-n]
+            if target < coins[i]:
+                return dp(i - 1, target)
+            else:
+                return min(dp(i, target - coins[i]) + 1, dp(i - 1, target))
+    
+    ans = dp(n - 1, amount)
+    ans = ans if ans != 1<<31 else -1
+
+    return ans
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+    n = len(coins)
+
+    # dp = [[0]* (amount + 1) for i in range(n+1)]
+    # dp[0][0] = 0
+    dp = [1<<31] * (amount + 1)
+    dp[0] = 0
+
+    for i, n in enumerate(coins):
+        # 如果是range(1, amount+1), 那么用前i构成的恰好为cost的可行解就被跳过
+        for c in range(amount+1):
+            if c < n:
+                # dp[i+1][c] = dp[i][c]
+                dp[c] = dp[c]
+            else:
+                # dp[i+1][c] = dp[i][c] + dp[i+1][c-n]
+                dp[c] = min(dp[c], dp[c-n]+1)
+    # ans = dp[-1][-1]
+    ans = dp[-1]
+    ans = ans if ans != 1<<31 else -1
+    return ans
+
+# 多重背包 每种物品有 k_i 个
+# 二进制分组优化 把多重背包转化成 0-1 背包模型来求解
+# 一个物品可以选7次 =》 可以选 1个物品 2个物品 4个物品 至多一次
 ```
 
 # 字符串
@@ -960,7 +1083,7 @@ class DisjointSet:
         rootQ = self.find(q)
         if rootP == rootQ:
             return
-        if   self.rank[rootP] < self.rank[rootQ]:
+        if self.rank[rootP] < self.rank[rootQ]:
             self.parent[rootP] = rootQ
         elif self.rank[rootP] > self.rank[rootQ]:
             self.parent[rootQ] = rootP
@@ -993,79 +1116,197 @@ def topologicalSort():
             if indegree[neighbor] == 0:
                 queue.append(neighbor)
 
-def floyd():
-    for k in range(1, n + 1):
-        for x in range(1, n + 1):
-            for y in range(1, n + 1):
-                f[x][y] = min(f[x][y], f[x][k] + f[k][y])
 '''
 e:边集
 adj:邻接表
 s:起点
 dis:最短路长度
 '''
-dis = [-(1<<31)] * n
-for u, v, w in e:
+dis = [[(1<<31)] * n for k in range(n)]
+for k in range(n):
+    dis[k][k] = 0
+for u, v, w in edges:
     dis[u][v] = w
-def floyd():
-    for k in range(1, n + 1):
-        for x in range(1, n + 1):
-            for y in range(1, n + 1):
-                dis[x][y] = min(dis[x][y], dis[x][k] + dis[k][y])
+    dis[v][u] = w
+        
+#floyd 多源最短路算法 可以处理负权边不能处理负环
+# 空间复杂度O(n^2)，时间复杂度O(n^3)
+for k in range(n):
+    for x in range(n):
+        for y in range(n):
+            dis[x][y] = min(dis[x][y], dis[x][k] + dis[k][y])
 
-#有负权的图的最短路
-dis = defaultdict(lambda: -(1<<31))
-dis[s] = 0
-def bellmanford(n, s):
-    dis[s] = 0
-    for i in range(1, n + 1):
-        for u in adj:
-            for v, w in adj[u]:
-                if dis[v] > dis[u] + w:
-                    dist[v] = dist[u] + w
+adj = defaultdict(list)
+for u, v, w in edges:
+    adj[u].append((v, w))
+    adj[v].append((u, w))
 
-dis = defaultdict(lambda: -(1<<31))
+
+# Bellman-Ford 有负权的图的最短路
+# 时间复杂度为O(ne)，e为图的边数，在图为稠密图的时候，是不可接受的。复杂度太高。
+dis = [(1<<31)] * n
 dis[s] = 0
-def spfa(s):
-    queue = deque([s])
-    vis = set([s])
-    while queue:
-        u = queue.popleft()
-        vis.remove(u)
-        for v, w in adj[u]:
-            if dist[u] + w < dist[v]:
-                dist[v] = dist[u] + w
-                if v not in vis:
-                    queue.append(v)
-                    vis.add(u)
-# 非负权图上单源最短路径
-dis = defaultdict(lambda: -(1<<31))
-dis[s] = 0
-def dijkstra(s):
-    q = [(0, s)]
-    vis = set()
-    while q:
-        _, u = heapq.heappop(q)
-        if u in vis:
-            continue
-        vis.add(u)
+for i in range(n):
+    for u in adj:
         for v, w in adj[u]:
             if dis[v] > dis[u] + w:
                 dis[v] = dis[u] + w
-                heapq.heappush(q, (dis[v], v))
+
+# Bellman-Ford + 队列优化 => spfa
+dis = [(1<<31)] * n
+dis[s] = 0
+queue = deque([s])
+cnt = [0] * n
+vis = [0] * n
+vis[s] = 1
+while queue:
+    u = queue.popleft()
+    vis[u] = 0
+    for v, w in adj[u]:
+        if dis[u] + w < dis[v]:
+            dis[v] = dis[u] + w
+            cnt[v] = cnt[u] + 1 # 记录最短路经过的边数
+            if cnt[v] >= n:
+                return False
+            # 在不经过负环的情况下，最短路至多经过 n - 1 条边
+            # 因此如果经过了多于 n 条边，一定说明经过了负环
+            if not vis[v]:
+                queue.append(v)
+                vis[v] = True
+
+dis = [(1<<31)] * n
+dis[s] = 0
+
+# dijkstra 单源最短路算法，其要求图中的边全部非负
+# 使用二叉堆优化后的Dijkstra算法的复杂度为O((E+n)lgn)，因此该优化适合于稀疏图
+# 如果是稠密图极端情况E = n*(n-1)/2，这时候时间复杂度就退化为O(n^2logn)了, 得不偿失。
+q = [(0, s)]
+vis = set()
+while q:
+    _, u = heapq.heappop(q)
+    if u in vis:
+        continue
+    vis.add(u)
+    for v, w in adj[u]:
+        if dis[v] > dis[u] + w:
+            dis[v] = dis[u] + w
+            heapq.heappush(q, (dis[v], v))
 ```
 
 # BST
 
 - C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
-- 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度log(n)
+- 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
 - `SortedList`用起来和List差不多
     - 不要用`key`参数很容易弄出不满足全序的怪胎，自定义class实现eq和lt
     - 不能利用下标赋值，可以用下标取值
-    - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(lg(n)) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(lg(n))
+    - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(logn) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(logn)
     - discard()跟remove()的差别在前面在移除不存在的元素时不会引发错误
     - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add()。一次加入多个可以用update(),或着使用`sl += some_iterable`
 - `SortedDict`基于`SortedList`实现只是额外存储对应的value，但只对key排序
-    - 可以用index取值, 但要用peekitem(), O(ln(n))
-    - 插入/刪除是O(ln(n))
-    - 对key排序
+    - 可以用index取值, 但要用peekitem(), O(logn)
+    - 插入/刪除是O(logn)
+    - 只根据key排序
+- 非递归遍历
+
+```python
+def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+    ans = []
+    stack = deque([root])
+    while stack:
+        cur = stack.pop()
+        if cur is not None:
+            ans.append(cur.val)
+            stack.append(cur.right)
+            stack.append(cur.left)
+    return ans
+
+def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+    cur = root
+    stack = deque()
+    res = []
+    while len(stack) > 0 or cur is not None:
+        while cur is not None:
+            stack.append(cur)
+            cur = cur.left
+        cur = stack.pop()
+        res.append(cur.val)
+        cur = cur.right
+    return res
+
+def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+    ans = []
+    stack = deque([root])
+    while stack:
+        cur = stack.pop()
+        if cur is not None:
+            ans.append(cur.val)
+            stack.append(cur.left)
+            stack.append(cur.right)
+    return ans[::-1]
+
+def successor(root: TreeNode) -> TreeNode:
+    root = root.right
+    while root.left is not None:
+        root = root.left
+    return root
+
+def predecessor(root: TreeNode) -> TreeNode:
+    root = root.left
+    while root.right is not None:
+        root = root.right
+    return root
+```
+
+- 增删查改
+
+```python
+def insertIntoBST(self, root: TreeNode, val: int) -> TreeNode:
+    if not root:
+        return TreeNode(val)
+    
+    if val > root.val:
+        # insert into the right subtree
+        root.right = self.insertIntoBST(root.right, val)
+    else:
+        # insert into the left subtree
+        root.left = self.insertIntoBST(root.left, val)
+    return root
+
+def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    if root is None:
+        return None
+    
+    if root.val < val:
+        return self.searchBST(root.right, val)
+    elif root.val == val:
+        return root
+    else:
+        return self.searchBST(root.left, val)
+
+def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+    if root is None:
+        return None
+    
+    if root.val == key:
+        if root.left is not None:
+            p = root.left
+            while p.right is not None:
+                p = p.right
+            root.val = p.val
+            root.left = self.deleteNode(root.left, root.val)
+        elif root.right is not None:    
+            p = root.right
+            while p.left is not None:
+                p = p.left
+            root.val = p.val
+            root.right = self.deleteNode(root.right, root.val)
+        else:
+            return None
+    elif root.val < key:
+        root.right = self.deleteNode(root.right, key)
+    else:
+        root.left = self.deleteNode(root.left, key)
+    return root
+
+```
