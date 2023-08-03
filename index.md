@@ -8,7 +8,7 @@ layout: default
 
 # Python语言
 - `dims=[state_dim, *dims, action_dim]`构造数组而不是`dims=[state_dim] + dims + [action_dim]`
-- 二维数组创建和下标访问就用`[[0]*1000 for i in range(1000)]`可以了除非有向量化运算才用`numpy`
+- 二维数组创建和下标访问就用`[x[:] for x in [[0]*1000]*1000]`除非有向量化运算才用`numpy`
 - `a, b = a + b, a - b` 的计算顺序为：
 	- `a + b`
 	- `a - b`
@@ -1398,18 +1398,6 @@ def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
             stack.append(cur.left)
             stack.append(cur.right)
     return ans[::-1]
-
-def successor(root: TreeNode) -> TreeNode:
-    root = root.right
-    while root.left is not None:
-        root = root.left
-    return root
-
-def predecessor(root: TreeNode) -> TreeNode:
-    root = root.left
-    while root.right is not None:
-        root = root.right
-    return root
 ```
 
 - 增删查改
