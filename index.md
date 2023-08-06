@@ -1186,14 +1186,14 @@ for i, x in enumerate(arr):
     while len(s) > 0 and arr[s[-1]] > x:
         s.pop()
     previous_less[i] = -1 if len(s) == 0 else s[-1]
-    s.push(i)
+    s.append(i)
 # find the next less element of each element in a vector with O(n) time:
 s = deque()
 next_less = [-1] * len(arr)
 for i, x in enumerate(arr):
     while len(s) > 0 and arr[s[-1]] > x:
     	next_less[s.pop()] = i
-    s.push(i)
+    s.append(i)
 # find size K sliding window max
 dq = deque()
 res = []
