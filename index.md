@@ -511,7 +511,57 @@ def equal(arr, v):
 
 # 递归
 
-## 子集型
+## BFS
+
+```python
+# 二维数组求到起点距离
+# starts :起点x, y坐标
+def BFS(starts)： 
+    n = len(grid)
+    q = []
+    dis = [[-1] * n for _ in range(n)]
+    for i, j in starts:
+        q.append((i, j， 0))
+        dis[i][j] = 0
+
+    while q:  # 多源 BFS
+        qfreeze = q
+        q = []
+        for i, j, d in qfreeze:
+            for x, y in (i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1):
+                # dis 兼做判断是否已经访问过
+                if 0 <= x < n and 0 <= y < n and dis[x][y] < 0:
+                    q.append((x, y))
+                    dis[x][y] = d + 1
+
+# 二维数组求有障碍的最短路
+def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
+    if grid[0][0] == 1:
+        return -1
+
+    n = len(grid)
+    q = [(0, 0, 1)]
+    dis = [[1000000000] * n for _ in range(n)]
+    dis[0][0] = 1
+    if n == 1:
+        return dis[0][0]
+
+    while q:  # 多源 BFS
+        qfreeze = q
+        q = []
+        for i, j, d in qfreeze:
+            for x, y in (i + 1, j), (i + 1, j + 1), (i, j + 1), (i - 1, j + 1), (i - 1, j), (i - 1, j - 1), (i, j - 1), (i + 1, j - 1):
+                # dis 兼做判断是否已经访问过
+                if 0 <= x < n and 0 <= y < n and grid[x][y] == 0 and dis[x][y] > d + 1:
+                    q.append((x, y, d + 1))
+                    dis[x][y] = d + 1
+                    if x == n - 1 and y == n - 1:
+                        return dis[n-1][n-1]
+    return -1
+```
+## BFS
+
+### 子集型
 
 ```python
 # 单个元素的视角 选或不选
@@ -548,7 +598,7 @@ def subsets(self, nums: List[int]) -> List[List[int]]:
     return ans
 ```
 
-## 组合型
+### 组合型
 
 ```python
 # 单个元素的视角 选或不选
@@ -591,7 +641,7 @@ def combine(self, nums: List[int], k: int) -> List[List[int]]:
     return ans
 ```
 
-## 排列
+### 排列
 
 ```python
 def permute(self, nums: List[int]) -> List[List[int]]:
@@ -1262,7 +1312,6 @@ def topologicalSort():
             indegree[neighbor] -= 1
             if indegree[neighbor] == 0:
                 queue.append(neighbor)
-
 '''
 e:边集
 adj:邻接表
@@ -1277,7 +1326,7 @@ for u, v, w in edges:
     dis[v][u] = w
         
 #floyd 多源最短路算法 可以处理负权边不能处理负环
-# 空间复杂度O(n^2)，时间复杂度O(n^3)
+# 空间复杂度O(N^2)，时间复杂度O(N^3)
 for k in range(n):
     for x in range(n):
         for y in range(n):
@@ -1290,7 +1339,7 @@ for u, v, w in edges:
 
 
 # Bellman-Ford 有负权的图的最短路
-# 时间复杂度为O(ne)，e为图的边数，在图为稠密图的时候，是不可接受的。复杂度太高。
+# 时间复杂度为O(NE)，e为图的边数，在图为稠密图的时候，是不可接受的。复杂度太高。
 dis = [(1<<31)] * n
 dis[s] = 0
 for i in range(n):
@@ -1332,8 +1381,8 @@ dis = [(1<<31)] * n
 dis[s] = 0
 
 # dijkstra 单源最短路算法，其要求图中的边全部非负
-# 使用二叉堆优化后的Dijkstra算法的复杂度为O((E+n)lgn)，因此该优化适合于稀疏图
-# 如果是稠密图极端情况E = n*(n-1)/2，这时候时间复杂度就退化为O(n^2logn)了, 得不偿失。
+# 使用二叉堆优化后的Dijkstra算法的复杂度为O((E+N)logN)，因此该优化适合于稀疏图
+# 如果是稠密图极端情况E = n*(n-1)/2，这时候时间复杂度就退化为O(N^2logN)了, 得不偿失。
 q = [(0, s)]
 vis = set()
 while q:
@@ -1347,7 +1396,45 @@ while q:
             heapq.heappush(q, (dis[v], v))
 ```
 
-# BST
+# 堆
+- 建堆是O(N)所以仍然比排序在Top K问题上有优势
+```python
+# Top K/Kth largest
+# construct maximum heap and pop first K element from it
+heapq.heapify([-n for n in nums])
+for i in range(k):
+    # top i+1 th largest element
+    e = -heapq.heappop(heap, n)
+# Time complexity: O(KlogN+N)
+# Space complexity: O(N)
+
+# filter through array and maintain K largest element dynamically
+heap = []
+for n in nums:
+    if len(heap) < k:
+        heapq.heappush(heap, n)
+    else:
+        heapq.heappushpop(heap, n)
+# top kth largest element
+heap[0]
+# Time complexity: O(NlogK)
+# Space complexity: O(K)
+
+# Top K/Kth smallest
+heapq.heapify([n for n in nums])
+for i in range(k):
+    e = heapq.heappop(heap, n)
+
+for n in nums:
+    if len(heap) < k:
+        heapq.heappush(heap, -n)
+    else:
+        heapq.heappushpop(heap, -n)
+-heap[0]
+```
+
+
+# 二叉搜索树
 
 - C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
 - 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
@@ -1355,7 +1442,7 @@ while q:
     - 不要用`key`参数很容易弄出不满足全序的怪胎，自定义class实现eq和lt
     - 不能利用下标赋值，可以用下标取值
     - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(logn) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(logn)
-    - discard()跟remove()的差别在前面在移除不存在的元素时不会引发错误
+    - discard()跟remove()的差别在前者在移除不存在的元素时不会引发错误
     - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add()。一次加入多个可以用update(),或着使用`sl += some_iterable`
 - `SortedDict`基于`SortedList`实现只是额外存储对应的value，但只对key排序
     - 可以用index取值, 但要用peekitem(), O(logn)
