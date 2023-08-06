@@ -264,6 +264,16 @@ def query(i, j):
     # 查询的是双闭区间[i, j]的区间和
     return suffixsum[i] - suffixsum[j+1]
 
+m = len(matrix)
+n = len(matrix[0])
+prefix_sum = prefix_sum = [x[:] for x in [[0]*(n+1)]*(m+1)]
+for i in range(m):
+    for j in range(n):
+        prefix_sum[i+1][j+1] = prefix_sum[i][j+1] + prefix_sum[i+1][j] + matrix[i][j] - prefix_sum[i][j]
+
+def query(row1, col1, row2, col2):
+    return - prefix_sum[row1][col2+1] - prefix_sum[row2+1][col1] + prefix_sum[row2+1][col2+1] + prefix_sum[row1][col1]
+
 diff = [arr[0]] + [arr[i] - arr[i - 1] for i in range(1, len(arr))]
 def modify(i, j, value):
     # 取[i~j]的双闭区间进行区间修改
@@ -1211,14 +1221,17 @@ for i in range(len(nums)):
 
 ```python
 class DisjointSet:
-    def __init__(self, n):
-        # number of components
-        self.count = n 
-        self.parent = list(range(n))
-        self.rank = [0] * n  
+    def __init__(self):
+        self.count = 0
+        self.parent = dict()
+        self.rank = dict()
+
+    def add(self, p):
+        self.parent[p] = p
+        self.rank[p] = 1
 
     def find(self, p):
-        if self.parent[p] != value:
+        if self.parent[p] != p:
             self.parent[p] = self.find(self.parent[p])
         return self.parent[p]
 
