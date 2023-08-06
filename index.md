@@ -1442,8 +1442,8 @@ for n in nums:
     - 不要用`key`参数很容易弄出不满足全序的怪胎，自定义class实现eq和lt
     - 不能利用下标赋值，可以用下标取值
     - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(logn) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(logn)
-    - discard()跟remove()的差别在前者在移除不存在的元素时不会引发错误
-    - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add()。一次加入多个可以用update(),或着使用`sl += some_iterable`
+    - 按值删 discard(value)跟remove(value)的差别在前者在移除不存在的元素时不会引发错误 按索引删pop(index)
+    - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add() 一次加入多个可以用update(),或着使用`sl += some_iterable`
 - `SortedDict`基于`SortedList`实现只是额外存储对应的value，但只对key排序
     - 可以用index取值, 但要用peekitem(), O(logn)
     - 插入/刪除是O(logn)
