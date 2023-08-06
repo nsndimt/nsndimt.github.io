@@ -1398,6 +1398,7 @@ while q:
 
 # 堆
 - 建堆是O(N)所以仍然比排序在Top K问题上有优势
+
 ```python
 # Top K/Kth largest
 # construct maximum heap and pop first K element from it
