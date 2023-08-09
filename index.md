@@ -1272,6 +1272,29 @@ class Trie:
                 return False
             curr = curr.edges[char]
         return curr.is_word_end
+
+    def prefix(self, word):
+        curr = self.root
+        ans = []
+        path = deque()
+        for char in word:
+            if char not in curr.edges:
+                return ans
+            curr = curr.edges[char]
+            path.append(char)
+        
+        def dfs(node):
+            nonlocal path, ans
+            if node.is_word_end:
+                ans.append(''.join(path))
+            for c in node.edges:
+                path.append(c)
+                dfs(node.edges[c])
+                path.pop()
+        
+        dfs(curr)
+                
+        return ans
 ```
 
 # 单调栈 单调队列
