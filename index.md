@@ -524,49 +524,53 @@ def equal(arr, v):
 ## BFS
 
 ```python
-# 二维数组求到起点距离
-# starts :起点x, y坐标
-def BFS(starts)： 
-    n = len(grid)
+# 二维迷宫BFS
+# starts: 起点x, y坐标
+# exits: 终点x, y坐标
+# grid: 迷宫 0代表可行 1代表障碍
+
+def BFS(starts, exits, grid):
+    m, n = len(maze), len(maze[0])
+    q = deque()
+    vis = [row.copy() for row in [[False] * n]*m]
+    end = [row.copy() for row in [[False] * n]*m]
+    for x, y in starts:
+        q.append((x, y, 0))
+    for x, y in exits:
+        end[x][y] = True
+
+    while q:
+        i, j, d = q.popleft()
+        for x, y in (i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1):
+            if 0 <= x < m and 0 <= y < n and grid[x][y] == 0 and not vis[x][y]:
+                q.append((x, y, d+1))
+                vis[x][y] = True
+                if end[x][y]:
+                    return d+1
+    return -1
+
+# version 2 处理一次多步 所以一个点可能被反复访问只要距离更近
+def BFS(starts, exits, grid):
+    m, n = len(maze), len(maze[0])
     q = []
-    dis = [[-1] * n for _ in range(n)]
-    for i, j in starts:
-        q.append((i, j， 0))
-        dis[i][j] = 0
+    dis = [row.copy() for row in [[1<<31] * n]*m]
+    end = [row.copy() for row in [[False] * n]*m]
+    for x, y in starts:
+        q.append((x, y, 0))
+    for x, y in exits:
+        end[x][y] = True
 
-    while q:  # 多源 BFS
+    while q:
         qfreeze = q
         q = []
-        for i, j, d in qfreeze:
-            for x, y in (i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1):
-                # dis 兼做判断是否已经访问过
-                if 0 <= x < n and 0 <= y < n and dis[x][y] < 0:
-                    q.append((x, y))
-                    dis[x][y] = d + 1
-
-# 二维数组求有障碍的最短路
-def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
-    if grid[0][0] == 1:
-        return -1
-
-    n = len(grid)
-    q = [(0, 0, 1)]
-    dis = [[1000000000] * n for _ in range(n)]
-    dis[0][0] = 1
-    if n == 1:
-        return dis[0][0]
-
-    while q:  # 多源 BFS
-        qfreeze = q
-        q = []
-        for i, j, d in qfreeze:
+        for i, j，d in qfreeze:
             for x, y in (i + 1, j), (i + 1, j + 1), (i, j + 1), (i - 1, j + 1), (i - 1, j), (i - 1, j - 1), (i, j - 1), (i + 1, j - 1):
                 # dis 兼做判断是否已经访问过
                 if 0 <= x < n and 0 <= y < n and grid[x][y] == 0 and dis[x][y] > d + 1:
                     q.append((x, y, d + 1))
                     dis[x][y] = d + 1
-                    if x == n - 1 and y == n - 1:
-                        return dis[n-1][n-1]
+                    if end[x][y]:
+                        return d+1
     return -1
 ```
 ## DFS
