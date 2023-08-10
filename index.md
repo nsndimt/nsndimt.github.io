@@ -6,8 +6,11 @@ layout: default
 * TOC
 {:toc}
 
+# 致谢
+- [灵茶山艾府](https://space.bilibili.com/206214)
+
 # Python语言
-- `dims=[state_dim, *dims, action_dim]`构造数组而不是`dims=[state_dim] + dims + [action_dim]`
+- `[i] + arr + [-1]`比`[i, *arr, i+1]`因为数组拼接是O(N)
 - 二维数组创建和下标访问就用`[x[:] for x in [[0]*1000]*1000]`除非有向量化运算才用`numpy`
 - `a, b = a + b, a - b` 的计算顺序为：
 	- `a + b`
@@ -51,8 +54,7 @@ layout: default
     - `groupby(iterable, key=None)`
         - ``[k for k, g in groupby('AAAABBBCCDAABBB')]`` --> A B C D A B
         - ``[list(g) for k, g in groupby('AAAABBBCCD')]`` --> AAAA BBB CC D
-- nonlocal声明只在当对函数外部mutable变量赋值时必须: 在Python 2中，闭包只能读外部函数的变量，而不能改写它。为了解决这个问题，Python 3引入了nonlocal关键字，在闭包内用nonlocal声明变量，就可以让解释器在外层函数中查找变量名。
-- Python里只有2种作用域：全局作用域和局部作用域。全局作用域是指当前代码所在模块的作用域，局部作用域是指当前函数或方法所在的作用域。局部作用域里的代码可以读包括全局作用域里的变量，但不能更改它。如果想更改它，这里就要使用global关键字了
+- nonlocal声明只在当对函数外部mutable变量赋值时必须: 在Python 2中，闭包只能读外部函数的变量，而不能改写它。为了解决这个问题，Python 3引入了nonlocal关键字，在闭包内用nonlocal声明变量，就可以让解释器在外层函数中查找变量名。同理在Python 中，当你想在函数内更改全局变量的值时，需要使用global 关键字
 
 # 排序
 - 大部分有序排序
@@ -241,65 +243,96 @@ print(heap)  # output: [Node value: 0, Node value: 2, Node value: 1, Node value:
 
 # 前缀和 差分
 
-```python 
+```python
+# 下标从0开始 第一位无用
 prefixsum = [0] + list(accumulate(arr))
 def query(i, j):
     # 查询的是双闭区间[i, j]的区间和
     return prefixsum[j+1] - prefixsum[i]
 
-# 动态建立前缀和
-def subarraySum(self, nums: List[int], k: int) -> int:
-    n = len(nums)
-    s = 0
-    ans = 0
-    prefix_sum_cnt = Counter([0])
-    for num in nums:
-        s = s + num
-        ans += prefix_sum_cnt[s - k]
-        prefix_sum_cnt[s] += 1
-    return ans
-
-suffixsum = list(accumulate(arr)) + [0]
-def query(i, j):
-    # 查询的是双闭区间[i, j]的区间和
-    return suffixsum[i] - suffixsum[j+1]
-
+# 下标从0开始
 m = len(matrix)
 n = len(matrix[0])
-prefix_sum = prefix_sum = [x[:] for x in [[0]*(n+1)]*(m+1)]
+# 第一行无用 第一列无用 且都为零
+prefix_sum = [x[:] for x in [[0]*(n+1)]*(m+1)]
+# version one
 for i in range(m):
     for j in range(n):
         prefix_sum[i+1][j+1] = prefix_sum[i][j+1] + prefix_sum[i+1][j] + matrix[i][j] - prefix_sum[i][j]
+# version two
+for i in range(m):
+    for j in range(n):
+        prefix_sum[i+1][j+1] = prefix_sum[i+1][j] + matrix[i][j]  
+for i in range(m):
+    for j in range(n):
+        prefix_sum[i+1][j+1] += prefix_sum[i][j+1]
 
 def query(row1, col1, row2, col2):
     return - prefix_sum[row1][col2+1] - prefix_sum[row2+1][col1] + prefix_sum[row2+1][col2+1] + prefix_sum[row1][col1]
 
+# 下标从0开始
+# version1 不padding
 diff = [arr[0]] + [arr[i] - arr[i - 1] for i in range(1, len(arr))]
 def modify(i, j, value):
     # 取[i~j]的双闭区间进行区间修改
     diff[i] += value  # 复原时, arr[i]之后的数都会 + value
     if j + 1 < len(diff):
         diff[j + 1] -= value
-# 一连串的modify最后recover
+# 一连串的modify最后recover 返回修改后的数组
 def recover():
-    # 复原修改后的数组
-    res = [diff[0]]
-    for i in range(1, len(diff)):
-        res.append(res[-1] + diff[i])
-    return res
+    return list(accumulate(diff))
 
-def checkArray(self, nums: List[int], k: int) -> bool:
-    n = len(nums)
-    d = [0] * (n + 1)
-    sum_d = 0
-    for i, x in enumerate(nums):
-        sum_d += d[i]
-        x += sum_d
-        if x == 0: continue  # 无需操作
-        if x < 0 or i + k > n: return False  # 无法操作
-        sum_d -= x  # 直接加到 sum_d 中
-        d[i + k] += x
-    return True
+# 下标从0开始
+# version2 padding 最后一个无用
+diff = [0] * (len(arr) + 1)
+def modify(i, j, value):
+    diff[i] += value
+    diff[j + 1] -= value
+for i, n in enumerate(arr):
+    modify(i, i, n)
+def recover():
+    # inplace 节省内存
+    for i in range(1, len(diff)):
+        diff[i] += diff[i-1]
+    return diff[:-1] # 最后一个padding需要去除
+
+
+# 二维差分模板
+# 下标从0开始
+m = len(matrix)
+n = len(matrix[0])
+# 最后一行无用 最后一列无用
+diff = [x[:] for x in [[0]*(n+1)]*(m+1)]
+def insert(r1, c1, r2, c2, v):
+    diff[r1][c1] += v
+    diff[r1][c2 + 1] -= v
+    diff[r2+1][c1] -= v
+    diff[r2+1][c2+1] += v
+for i in range(m):
+    for j in range(n):
+        insert(i,i,j,j,matrix[i][j])
+
+def recover():
+    ans = [x[:] for x in [[0]*(n+1)]*(m+1)]
+    # for i in range(m):
+    #     for j in range(n):
+    #         ans[i+1][j+1] = ans[i+1][j] + diff[i][j]
+    # for i in range(m):
+    #     for j in range(n):
+    #         ans[i+1][j+1] += ans[i][j+1]
+    for i in range(m):
+        for j in range(n):
+            ans[i+1][j+1] = ans[i][j+1] + ans[i+1][j] + diff[i][j] - ans[i][j]
+    return [ans[i+1][1:] for i in range(m)]
+
+def recover():
+    for i in range(m):
+        for j in range(1, n):
+            diff[i][j] += diff[i][j-1]
+    for i in range(1, m):
+        for j in range(n):
+            diff[i][j] += diff[i-1][j]
+    return [diff[i][:-1] for i in range(m)]
 
 ```
 # 树状数组
