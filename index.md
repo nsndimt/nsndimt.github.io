@@ -8,6 +8,7 @@ layout: default
 
 # 致谢
 - [灵茶山艾府](https://space.bilibili.com/206214)
+- [OIWiki](https://oi-wiki.org/)
 
 # Python语言
 - `[i] + arr + [-1]`比`[i, *arr, i+1]`因为数组拼接是O(N)
@@ -596,7 +597,7 @@ def BFS(starts, exits, grid):
     while q:
         qfreeze = q
         q = []
-        for i, j，d in qfreeze:
+        for i, j, d in qfreeze:
             for x, y in (i + 1, j), (i + 1, j + 1), (i, j + 1), (i - 1, j + 1), (i - 1, j), (i - 1, j - 1), (i, j - 1), (i + 1, j - 1):
                 # dis 兼做判断是否已经访问过
                 if 0 <= x < n and 0 <= y < n and grid[x][y] == 0 and dis[x][y] > d + 1:
