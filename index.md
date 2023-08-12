@@ -333,7 +333,11 @@ def recover():
     for i in range(1, m):
         for j in range(n):
             diff[i][j] += diff[i-1][j]
-    return [diff[i][:-1] for i in range(m)]
+    # return [diff[i][:-1] for i in range(m)]
+    diff.pop()
+    for row in diff:
+        row.pop()
+    return diff
 
 ```
 # 树状数组
@@ -383,7 +387,7 @@ class BinaryIndexTree:
 - 分组循环
 
 ```python
-#同向双指针 求最小窗口 小区间满足包含它的大区间一定满足
+#同向双指针 求最小窗口 区间越大月可能满足条件 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
     n = len(nums)
     ans = n + 1
@@ -402,7 +406,7 @@ def minSubArrayLen(self, target: int, nums: List[int]) -> int:
             left += 1
         # when subarray is empty left = right + 1
     return ans if ans <= n else 0
-#同向双指针 求最大窗口 大区间满足子区间一定满足
+#同向双指针 求最大窗口 区间越小越可能满足条件 大区间满足条件子区间（小区间）一定满足
 def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
     n = len(nums)
     p = 1
@@ -606,6 +610,30 @@ def BFS(starts, exits, grid):
                     if end[x][y]:
                         return d+1
     return -1
+
+# 二维矩阵BFS
+def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+    h = []
+    n = len(matrix)
+    q = deque([(0, 0)])
+    inq = set([(0, 0)])
+    while q:
+        i, j = q.popleft()
+        stop = True
+        if len(h) < k:
+            heapq.heappush(h, -matrix[i][j])
+            stop = False
+        else:
+            neg_biggest = heapq.heappushpop(h, -matrix[i][j])
+            stop = neg_biggest == -matrix[i][j]
+        if not stop:
+            if i + 1 < n and (i+1, j) not in inq:
+                q.append((i+1, j))
+                inq.add((i+1, j))
+            if j + 1 < n and (i, j+1) not in inq:
+                q.append((i, j+1))
+                inq.add((i, j+1))
+    return -heapq.heappop(h)
 ```
 ## DFS
 
@@ -876,6 +904,70 @@ def getPermutation(self, n: int, k: int) -> str:
     return "".join(ans)
 ```
 # DP
+
+## 区间DP
+
+```python
+def longestPalindromeSubseq(self, s: str) -> int:
+    n = len(s)        
+    
+    @cache
+    def dfs(i, j):
+        if i > j:
+            return 0
+        elif i == j:
+            return 1
+        elif s[i] == s[j]:
+            return dfs(i+1, j-1) + 2
+        else:
+            return max(dfs(i+1, j), dfs(i, j-1))
+    
+    return dfs(0, n-1)
+
+def minScoreTriangulation(self, values: List[int]) -> int:
+    @cache
+    def dfs(i: int, j: int) -> int:
+        if i + 1 == j:
+            return 0  # 只有两个点，无法组成三角形
+        else:
+            ans = 1<<63
+            for k in range(i + 1, j):
+                ans = min(dfs(i, k) + dfs(k, j) + values[i] * values[j] * values[k], ans)
+            return ans
+    return dfs(0, len(values) - 1)
+```
+
+## 树形DP
+
+```python
+def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+    ans = 0
+    def dfs(node):
+        nonlocal ans
+        if node is None:
+            return -1
+        
+        left_chain_len = dfs(node.left) + 1
+        right_chain_len = dfs(node.right) + 1
+        ans = max(ans, left_chain_len + right_chain_len)
+        
+        return max(left_chain_len, right_chain_len)
+    
+    dfs(root)
+    return ans
+
+def rob(self, root: Optional[TreeNode]) -> int:
+    def dfs(node):
+        if node is None:
+            return 0, 0
+        l_rob, l_not_rob = dfs(node.left)
+        r_rob, r_not_rob = dfs(node.right)
+        rob = l_not_rob + r_not_rob + node.val
+        not_rob = max(l_rob, l_not_rob) + max(r_rob, r_not_rob)
+        return rob, not_rob
+
+    return max(dfs(root))
+```
 
 ## 状压DP
 
@@ -1370,32 +1462,33 @@ class DisjointSet:
     def __init__(self):
         self.count = 0
         self.parent = dict()
-        self.rank = dict()
+        # 并不是按rank合并 而是按size合并 时间复杂度差别并不大
+        self.size = dict()
 
     def add(self, p):
         self.parent[p] = p
-        self.rank[p] = 1
+        self.size[p] = 1
+        self.count += 1
 
-    def find(self, p):
+    def root(self, p):
         if self.parent[p] != p:
-            self.parent[p] = self.find(self.parent[p])
+            self.parent[p] = self.root(self.parent[p])
         return self.parent[p]
 
     def connected(self, p, q):
-        return self.find(p) == self.find(q)
+        return self.root(p) == self.root(q)
 
     def union(self, p, q):
-        rootP = self.find(p)
-        rootQ = self.find(q)
+        rootP = self.root(p)
+        rootQ = self.root(q)
         if rootP == rootQ:
             return
-        if self.rank[rootP] < self.rank[rootQ]:
+        if self.size[rootP] < self.size[rootQ]:
             self.parent[rootP] = rootQ
-        elif self.rank[rootP] > self.rank[rootQ]:
-            self.parent[rootQ] = rootP
+            self.size[rootQ] += self.size[rootP]
         else:
             self.parent[rootQ] = rootP
-            self.rank[rootP] += 1
+            self.size[rootP] += self.size[rootQ]
         self.count -= 1
 ```
 
