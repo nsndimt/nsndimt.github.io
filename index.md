@@ -33,6 +33,7 @@ layout: default
     - key指定比较值
 - `min` and `argmin` 一次性拿到 `min_v, min_idx = min(enumerate(x), key=operator.itemgetter(1)` 
 - `enumerate(iterable, start=0)` 用于 `enumerate(arr[1:], start=1)`
+- `reversed(list(enumerate(iterable)))`必须list不然报错`enumerate object is not reversible`
 - `defaultdict(list)` 空数组 `defaultdict(int)` 默认为0 `defaultdict(lambda:-1)` 默认为-1
 - `{'jack',}` 等价 `set('jack')` 以及 `{'jack':1}` 等价 `dict(jack=1)`
 - python 整除取余向负无穷取整 `n mod base = n - math.floor(n/base) * base` 要模仿C的整除取余行为(向零取整)用int() `n - int(n/base) * base`
@@ -512,12 +513,12 @@ def equal(arr, v):
 
 ## 二分和bisect关系  
 
-| position            | bisect                          | minium possible value | maxium possible value |
-| -----------         | -----------                     | -----------           | -----------           |
-| last less or equal  | bisect.bisect_right(arr, v) - 1 | -1 (not find)         | len(arr) - 1          |
-| first great         | bisect.bisect_right(arr, v)     | -1                    | len(arr) (not find)   |
-| last less           | bisect.bisect_left(arr, v) - 1  | -1 (not find)         | len(arr) - 1          |
-| first great or equal| bisect.bisect_right(arr, v)     | -1                    | len(arr) (not find)   |
+| position            | bisect                          | minium possible value   | maxium possible value        |
+| -----------         | -----------                     | -----------             | -----------                  |
+| last less or equal  | bisect.bisect_right(arr, v) - 1 | -1 (all great)          | len(arr) - 1                 |
+| first great         | bisect.bisect_right(arr, v)     | 0                       | len(arr) (all less or equal) |
+| last less           | bisect.bisect_left(arr, v) - 1  | -1 (all great or equal) | len(arr) - 1                 |
+| first great or equal| bisect.bisect_left(arr, v)      | 0                       | len(arr) (all less)          |
 
 ## 循环不变量
 
@@ -526,8 +527,8 @@ def equal(arr, v):
 | last less or equal  | arr[mid] <= v   | left                         | <= v        | > v         |
 | first great         | arr[mid] <= v   | right                        | <= v        | > v         |
 | last less           | arr[mid] < v    | left                         | < v         | >= v        |
-| first great or equal| arr[mid] < v    | right                        | < v         | >=v         |
-| equal               | arr[mid] <> v   | -1 all colored => not found  | < v         | >=v         |
+| first great or equal| arr[mid] < v    | right                        | < v         | >= v        |
+| equal               | arr[mid] != v   | -1 all colored => not found  | < v         | > v         |
 
 ## 开区间
 - 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
@@ -1427,21 +1428,40 @@ class Trie:
 
 ```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
+# 复杂度: 出栈入栈各一次 O(N)
 # find the previous less element of each element in a vector with O(n) time
-s = deque()
-previous_less = [-1] * len(arr)
-for i, x in enumerate(arr):
-    while len(s) > 0 and arr[s[-1]] > x:
-        s.pop()
-    previous_less[i] = -1 if len(s) == 0 else s[-1]
-    s.append(i)
-# find the next less element of each element in a vector with O(n) time:
-s = deque()
-next_less = [-1] * len(arr)
-for i, x in enumerate(arr):
-    while len(s) > 0 and arr[s[-1]] > x:
-    	next_less[s.pop()] = i
-    s.append(i)
+def previousLessElement(arr):
+    s = deque()
+    previous_less = [-1] * len(arr)
+    for i, x in enumerate(arr):
+        # 比当前元素大出栈 => 找到了前一个更小
+        while len(s) > 0 and arr[s[-1]] > x:
+            s.pop()
+        previous_less[i] = -1 if len(s) == 0 else s[-1]
+        s.append(i)
+    return previous_less
+
+def nextGreaterElement(arr):
+    s = deque()
+    next_greater = [-1] * len(arr)
+    for i, x in enumerate(arr):
+        # 比当前元素小出栈 => 找到了下一个更大
+        while len(s) > 0 and arr[s[-1]] < x:
+            next_greater[s.pop()] = arr[i]
+        s.append(i)
+    return next_greater
+
+
+def nextLessElement(arr):
+    s = deque()
+    next_less = [-1] * len(arr)
+    for i, x in enumerate(arr):
+        # 比当前元素大出栈 => 找到了下一个最小
+        while len(s) > 0 and arr[s[-1]] > x:
+            next_less[s.pop()] = arr[i]
+        s.append(i)
+    return next_less
+
 # find size K sliding window max
 dq = deque()
 res = []
