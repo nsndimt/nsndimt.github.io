@@ -392,20 +392,26 @@ class BinaryIndexTree:
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
     n = len(nums)
     ans = n + 1
+    cnt = 0
     s = 0
     left = 0
     for right in range(n):
         s += nums[right]
-        # when left = right, s must be 0 and the target always > 0
-        # left <= right is not needed in this case but is necessary in other cases 
         #窗口合法 → 开始收缩
-        while left <= right and s >= target:
-            # [left, right] has sum >= target
-            # but not every valid window ended with right can enter the loop body
-            ans = min(right - left + 1, ans)
-            s -= nums[left]
-            left += 1
-        # when subarray is empty left = right + 1
+        while left <= right
+            if s >= target:
+                # [left, right] has sum >= target
+                # but not every valid window ended with right can enter the loop body
+                ans = min(right - left + 1, ans)
+                s -= nums[left]
+                left += 1
+            else:
+                # when leave the loop if subarray is empty then left = right + 1
+                # otherwise [0, right], [1, right], [left-1, right] are all valid window
+                # therefore to count every valid window
+                cnt += left
+                break
+        # after the while loop  so better not write codes here
     return ans if ans <= n else 0
 #同向双指针 求最大窗口 区间越小越可能满足条件 大区间满足条件子区间（小区间）一定满足
 def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
@@ -513,12 +519,13 @@ def equal(arr, v):
 
 ## 二分和bisect关系  
 
-| position            | bisect                          | minium possible value   | maxium possible value        |
+| position arr[p]     | bisect return p                 | minium possible value   | maxium possible value        |
 | -----------         | -----------                     | -----------             | -----------                  |
 | last less or equal  | bisect.bisect_right(arr, v) - 1 | -1 (all great)          | len(arr) - 1                 |
 | first great         | bisect.bisect_right(arr, v)     | 0                       | len(arr) (all less or equal) |
 | last less           | bisect.bisect_left(arr, v) - 1  | -1 (all great or equal) | len(arr) - 1                 |
 | first great or equal| bisect.bisect_left(arr, v)      | 0                       | len(arr) (all less)          |
+
 
 ## 循环不变量
 
@@ -751,14 +758,16 @@ def gcd(x, y):
         x, y = y, x % y
     return x
 
-def binpow(a, b):
+def binpow(a, b, mod=None):
     res = 1
     while b > 0:
         if (b & 1):
-            res = res * a
-        a = a * a
+            res = ((res * a) % mod) if mod else (res * a)
+        a = ((a * a) % mod) if mod else (a * a)
         b >>= 1
     return res
+# 内置函数更快
+pow(base, exp, mod=None)
 
 math.comb(x, y)
 math.perm(x, y)
@@ -905,6 +914,31 @@ def getPermutation(self, n: int, k: int) -> str:
     return "".join(ans)
 ```
 # DP
+
+## 最长递增子序列
+
+```python
+def lengthOfLIS(self, nums: List[int]) -> int:
+    if not nums:
+        return 0
+    length = [1]*len(nums)
+    for i, n in enumerate(nums):
+        for j, m in enumerate(nums[:i]):
+            if n > m:
+                length[i] = max(length[i], length[j]+1)
+    return max(length)
+# 贪心做法
+def lengthOfLIS(self, nums: List[int]) -> int:
+    g = []
+    for n in nums:
+        # 非严格递增改为bisect_right
+        j = bisect_left(g, n)
+        if j == len(g):
+            g.append(n)
+        else:
+            g[j] = n
+    return len(g)
+```
 
 ## 区间DP
 
@@ -1294,6 +1328,46 @@ for i, n in enumerate(coins):
 ans = dp[-1]
 ```
 
+# 贪心
+
+```python
+def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+    intervals.sort(key=itemgetter(1))
+    non_overlap = 0
+    last_end = - (1<<31)
+    for start, end in intervals:
+        if start >= last_end:
+            non_overlap += 1
+            last_end = end
+    return len(intervals) - non_overlap
+
+def canJump(self, nums: List[int]) -> bool:
+    last_valid = len(nums) -1
+    for pos in range(len(nums)-2,-1,-1):
+        #if we can jump then update
+        if nums[pos]+pos >= last_valid:
+            last_valid = pos
+    return last_valid == 0
+
+def jump(self, nums: List[int]) -> int:
+    # The starting range of the first jump is [0, 0]
+    answer, n = 0, len(nums)
+    cur_end, cur_far = 0, 0
+
+    for i in range(n - 1):
+        # Update the farthest reachable index of this jump.
+        cur_far = max(cur_far, i + nums[i])
+
+        # If we finish the starting range of this jump,
+        # Move on to the starting range of the next jump.
+        if i == cur_end:
+            answer += 1
+            cur_end = cur_far
+
+    return answer
+```
+
+
 # 字符串
 
 ```python
@@ -1429,13 +1503,24 @@ class Trie:
 ```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
 # 复杂度: 出栈入栈各一次 O(N)
-# find the previous less element of each element in a vector with O(n) time
+# 返回位置而不是
+def previousGreaterElement(arr):
+    s = deque()
+    previous_greater = [-1] * len(arr)
+    for i, x in enumerate(arr):
+        # 当前元素更大更近 => 比当前元素大出栈
+        while len(s) > 0 and arr[s[-1]] <= x:
+            s.pop()
+        previous_greater[i] = -1 if len(s) == 0 else s[-1]
+        s.append(i)
+    return previous_greater
+
 def previousLessElement(arr):
     s = deque()
     previous_less = [-1] * len(arr)
     for i, x in enumerate(arr):
-        # 比当前元素大出栈 => 找到了前一个更小
-        while len(s) > 0 and arr[s[-1]] > x:
+        # 当前元素更小更近 => 比当前元素大出栈
+        while len(s) > 0 and arr[s[-1]] >= x:
             s.pop()
         previous_less[i] = -1 if len(s) == 0 else s[-1]
         s.append(i)
@@ -1443,22 +1528,22 @@ def previousLessElement(arr):
 
 def nextGreaterElement(arr):
     s = deque()
-    next_greater = [-1] * len(arr)
+    next_greater = [len(arr)] * len(arr)
     for i, x in enumerate(arr):
         # 比当前元素小出栈 => 找到了下一个更大
         while len(s) > 0 and arr[s[-1]] < x:
-            next_greater[s.pop()] = arr[i]
+            next_greater[s.pop()] = i
         s.append(i)
     return next_greater
 
 
 def nextLessElement(arr):
     s = deque()
-    next_less = [-1] * len(arr)
+    next_less = [len(arr)] * len(arr)
     for i, x in enumerate(arr):
         # 比当前元素大出栈 => 找到了下一个最小
         while len(s) > 0 and arr[s[-1]] > x:
-            next_less[s.pop()] = arr[i]
+            next_less[s.pop()] = i
         s.append(i)
     return next_less
 
@@ -1698,6 +1783,31 @@ def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         cur = cur.right
     return res
 
+#无parent指针
+def inorderSuccessor(self, root: TreeNode, p: TreeNode) -> Optional[TreeNode]:
+    successor = None
+    while root:
+        if p.val >= root.val:
+            root = root.right
+        else:
+            successor = root
+            root = root.left
+    return successor
+
+#有parent指针
+def inorderSuccessor(self, node: 'Node') -> 'Optional[Node]':
+    # the successor is somewhere lower in the right subtree
+    if node.right:
+        node = node.right
+        while node.left:
+            node = node.left
+        return node
+
+    # the successor is somewhere upper in the tree
+    while node.parent and node == node.parent.right:
+        node = node.parent
+    return node.parent
+
 def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
     ans = []
     stack = deque([root])
@@ -1761,4 +1871,68 @@ def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
         root.left = self.deleteNode(root.left, key)
     return root
 
+```
+
+- LCA
+
+```python
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    p_val = p.val
+    q_val = q.val
+    node = root
+
+    while node:
+        parent_val = node.val
+        if p_val > parent_val and q_val > parent_val:
+            node = node.right
+        elif p_val < parent_val and q_val < parent_val:
+            node = node.left
+        else:
+            return node
+```
+
+# 二叉树
+```python
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    def addParents(node, parent=None):
+        if node is None:
+            return
+        node.parent = parent
+        addParents(node.left, node)
+        addParents(node.right, node)
+
+    addParents(root)
+
+    ancestors = set()
+    while p:
+        ancestors.add(p)
+        p = p.parent
+
+    while q not in ancestors:
+        q = q.parent
+    return q
+
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    lca = None
+    def find(node):
+        nonlocal lca
+        p_find, q_find = False, False
+        if node is None:
+            return p_find, q_find
+        elif node.val == p.val:
+            p_find = True
+        elif node.val == q.val:
+            q_find = True
+
+        lp_find, lq_find = find(node.left)
+        rp_find, rq_find = find(node.right)
+        p_find = p_find or lp_find or rp_find
+        q_find = q_find or lq_find or rq_find
+
+        if p_find and q_find and lca is None:
+            lca = node
+
+        return p_find, q_find
+    find(root)
+    return lca
 ```
