@@ -928,6 +928,10 @@ def lengthOfLIS(self, nums: List[int]) -> int:
                 length[i] = max(length[i], length[j]+1)
     return max(length)
 # 贪心做法
+# 技巧交换下标和长度
+# dp[i]: 以下标i结尾的递增子序列长度
+# greed[i]: 长度为i的递增子序列
+
 def lengthOfLIS(self, nums: List[int]) -> int:
     g = []
     for n in nums:
@@ -1241,6 +1245,8 @@ def coinChange(self, coins: List[int], amount: int) -> int:
 # 多重背包 每种物品有 k_i 个
 # 二进制分组优化 把多重背包转化成 0-1 背包模型来求解
 # 一个物品可以选7次 =》 可以选 1个物品 2个物品 4个物品 至多一次
+
+
 ```
 
 - 求max/min的模型里：
@@ -1331,16 +1337,6 @@ ans = dp[-1]
 # 贪心
 
 ```python
-def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
-    intervals.sort(key=itemgetter(1))
-    non_overlap = 0
-    last_end = - (1<<31)
-    for start, end in intervals:
-        if start >= last_end:
-            non_overlap += 1
-            last_end = end
-    return len(intervals) - non_overlap
-
 def canJump(self, nums: List[int]) -> bool:
     last_valid = len(nums) -1
     for pos in range(len(nums)-2,-1,-1):
@@ -1365,6 +1361,20 @@ def jump(self, nums: List[int]) -> int:
             cur_end = cur_far
 
     return answer
+
+def findMinArrowShots(self, points: List[List[int]]) -> int:
+    # The optimal position for the leftmost arrow
+    # is at the end of the balloon with the smallest ending point
+    # Otherwise, we can shift it to the right
+    #  and get a not worse than before position
+    points.sort(key=itemgetter(1))
+    firstend = points[0][1]
+    ans = 1
+    for start, end in points[1:]:
+        if firstend < start:
+            ans += 1
+            firstend = end
+    return ans
 ```
 
 
