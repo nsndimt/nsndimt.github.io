@@ -63,7 +63,7 @@ layout: default
 	- 1、最理想情况（数据预先已排好序），插入和冒泡都只需要进行n次循环和比较就结束了，不需要进行数据交换（传值），而选择要进行(n^2)/2次循环和比较，显然选择明显落后于冒泡和插入
 	- 2、平均情况（数据完全随机），插入要进行(n^2)/4次循环和比较，以及同是(n^2)/4次的数据复制（传值）而冒泡要进行(n^2)/2次循环和比较，(n^2)/4次交换，每次交换等于3次数据复制（传值），因此它的循环比较次数和和数据复制次数分别是插入的2倍和3倍，因此冒泡的耗时是插入的2-3倍之间
  	- 如果排序对象是简单数据，每次比较操作的耗时大于数据复制，则冒泡的耗时会比较接近插入的2倍；如果排序对象是很长的数据结构，每次复制数据的耗时远大于比较，则冒泡的耗时会更接近插入的3倍。
-- 前K大 1. 冒泡 K 遍 2. 维护大小为K最大堆 3.递归划分（快排 quickselect）
+- 前K大 1. 冒泡 K 遍 2. 维护大小为K最小堆 3.递归划分（快排 quickselect）
 - 逆序对: 归并排序
 
 ```python
@@ -201,11 +201,20 @@ def topKlargest(arr, k):
         # and idx = p equal to pivot, there might be more element equal to pivot, but at least idx >= p must be top len(arr) - p
         p = LomutoPartition(arr, left, right)
         if p == len(arr) - k:
-            return [t[1] for t in arr[p:]]
+            return arr[p:]
         elif p < len(arr) - k:
             left = p + 1
         else:
             right = p - 1
+
+def findKthLargest(self, nums: List[int], k: int) -> int:
+    heap = []
+    for n in nums:
+        if len(heap) < k:
+            heapq.heappush(heap, n)
+        else:
+            heapq.heappushpop(heap, n)
+    return heapq.heappop(heap)
 ```
 
 - `cmp_to_key` 定义复杂顺序 `operator.itemgetter`替代lambda
