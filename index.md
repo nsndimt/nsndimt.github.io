@@ -1574,7 +1574,7 @@ def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
     for i, n in enumerate(nums):
         # 1. 进
         while len(queue) > 0 and nums[queue[-1]] <= n:
-            queue.popleft()
+            queue.pop()
         queue.append(i)
         
         # 2. 出
