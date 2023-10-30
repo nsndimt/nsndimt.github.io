@@ -1566,17 +1566,26 @@ def nextLessElement(arr):
         s.append(i)
     return next_less
 
-# find size K sliding window max
-dq = deque()
-res = []
-for i in range(len(nums)):
-    if dq and dq[0] == i - k:
-        dq.popleft()
-    while dq and nums[i] >= nums[dq[-1]]:
-        dq.pop()
-    dq.append(i)
-    if i >= k - 1:
-        res.append(nums[dq[0]])
+
+def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
+    N = len(nums)
+    queue = deque()
+    ans = []
+    for i, n in enumerate(nums):
+        # 1. 进
+        while len(queue) > 0 and nums[queue[-1]] <= n:
+            queue.popleft()
+        queue.append(i)
+        
+        # 2. 出
+        if queue[0] + k <= i:
+            queue.popleft()
+
+        # 3. 记录答案
+        if i >= k - 1:
+            ans.append(nums[queue[0]])
+
+    return ans
 ```
 
 # 并查集
