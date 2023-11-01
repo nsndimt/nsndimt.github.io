@@ -369,12 +369,10 @@ class BinaryIndexTree:
             self.arr[i] = prefix_sum[i] - prefix_sum[i - (i & (-i))]
         self.nums = nums
 
-    def update(self, index: int, val: int) -> None:
-        diff = val - self.nums[index]
-        self.nums[index] = val
-        idx = index + 1
+    def update(self, index: int, val: int) -> None: # a[1]..a[x]中一个加固定值
+        self.nums[index] += val
         while idx <= self.n: # 不能越界
-            self.arr[idx] += diff
+            self.arr[idx] += val
             idx += idx & -idx
 
     def prefix_sum(self, x): # a[1]..a[x]的和
@@ -385,19 +383,19 @@ class BinaryIndexTree:
         return ans
     
     def sumRange(self, left: int, right: int) -> int:
-        return self.prefix_sum(right+1) - self.prefix_sum(left)
+        return self.prefix_sum(right) - self.prefix_sum(left-1)
 ```
 
 # 双指针 滑动窗口
 
 - 寻找单调性进行优化O(N^2) 循环
-  - 同向双指针 纯靠模拟 拿出笔来 注意边界条件 子数组 子序列
-  - 对向双指针
+  - 同向双指针 子数组 子序列
+  - 对向双指针 排除答案
 - 快慢指针
 - 分组循环
 
 ```python
-#同向双指针 求最小窗口 区间越大月可能满足条件 小区间满足包含它的大区间一定满足
+#同向双指针 求最小窗口 区间越大越可能满足条件 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
     n = len(nums)
     ans = n + 1
@@ -439,6 +437,32 @@ def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
             p //= nums[left]
             left += 1
     return ans
+
+def maxArea(self, height):
+    i,j = 0, len(height) - 1
+    maxarea = min(height[i], height[j]) * (j - i) 
+    while i<j:
+        if height[i] <= height[j]:
+            i += 1
+        else:
+            j -= 1
+        maxarea = max(min(height[i], height[j]) * (j - i), maxarea)
+    return maxarea
+
+def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+    dummy = ListNode(next=head)
+    
+    fast = dummy
+    for i in range(n+1):
+        fast = fast.next
+
+    slow = dummy
+    while fast is not None:
+        fast = fast.next
+        slow = slow.next
+
+    slow.next = slow.next.next
+    return dummy.next
 
 def alternatingSubarray(self, nums: List[int]) -> int:
     n = len(nums)
@@ -1521,67 +1545,66 @@ class Trie:
 
 ```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
-# 复杂度: 出栈入栈各一次 O(N)
-# 返回位置而不是
-def previousGreaterElement(arr):
-    s = deque()
-    previous_greater = [-1] * len(arr)
-    for i, x in enumerate(arr):
-        # 当前元素更大更近 => 比当前元素大出栈
-        while len(s) > 0 and arr[s[-1]] <= x:
-            s.pop()
-        previous_greater[i] = -1 if len(s) == 0 else s[-1]
-        s.append(i)
-    return previous_greater
+# 1. 复杂度: 出栈入栈各一次 O(N) 2.返回位置而不是值
+# 单调栈
+# # 正向遍历
+s = deque()
+previous_greater = [-1] * len(arr)
+next_greater_or_equal = [len(arr)] * len(arr)
+for i, x in enumerate(arr):
+    # 当前元素更大更近 => 比当前元素小出栈
+    # 比当前元素小出栈 => 找到了下一个更大
+    while len(s) > 0 and arr[s[-1]] <= x:
+        next_greater_or_equal[s.pop()] = i
+    previous_greater[i] = -1 if len(s) == 0 else s[-1]
+    s.append(i)
 
-def previousLessElement(arr):
-    s = deque()
-    previous_less = [-1] * len(arr)
-    for i, x in enumerate(arr):
-        # 当前元素更小更近 => 比当前元素大出栈
-        while len(s) > 0 and arr[s[-1]] >= x:
-            s.pop()
-        previous_less[i] = -1 if len(s) == 0 else s[-1]
-        s.append(i)
-    return previous_less
+s = deque()
+previous_less = [-1] * len(arr)
+next_less_or_equal = [len(arr)] * len(arr)
+for i, x in enumerate(arr):
+    # 当前元素更小更近 => 比当前元素大出栈
+    # 比当前元素大出栈 => 找到了下一个更小
+    while len(s) > 0 and arr[s[-1]] >= x:
+        next_less_or_equal[s.pop()] = i
+    previous_less[i] = -1 if len(s) == 0 else s[-1]
+    s.append(i)
 
-def nextGreaterElement(arr):
-    s = deque()
-    next_greater = [len(arr)] * len(arr)
-    for i, x in enumerate(arr):
-        # 比当前元素小出栈 => 找到了下一个更大
-        while len(s) > 0 and arr[s[-1]] < x:
-            next_greater[s.pop()] = i
-        s.append(i)
-    return next_greater
+# 反向遍历
+s = deque()
+previous_greater_or_equal = [-1] * len(arr)
+next_greater = [len(arr)] * len(arr)
+for i, x in list(enumerate(arr))[::-1]:
+    while len(s) > 0 and arr[s[-1]] <= x:
+        previous_greater_or_equal[s.pop()] = i
+    next_greater[i] = -1 if len(s) == 0 else s[-1]
+    s.append(i)
 
+s = deque()
+previous_less_or_equal = [-1] * len(arr)
+next_less = [len(arr)] * len(arr)
+for i, x in list(enumerate(arr))[::-1]:
+    while len(s) > 0 and arr[s[-1]] >= x:
+        previous_less_or_equal[s.pop()] = i
+    next_less[i] = -1 if len(s) == 0 else s[-1]
+    s.append(i)
 
-def nextLessElement(arr):
-    s = deque()
-    next_less = [len(arr)] * len(arr)
-    for i, x in enumerate(arr):
-        # 比当前元素大出栈 => 找到了下一个最小
-        while len(s) > 0 and arr[s[-1]] > x:
-            next_less[s.pop()] = i
-        s.append(i)
-    return next_less
-
-
+# 单调队列
 def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
     N = len(nums)
     queue = deque()
     ans = []
     for i, n in enumerate(nums):
-        # 1. 进
+        # 1. 进 比当前元素小的对求最大值没帮助=>出栈
         while len(queue) > 0 and nums[queue[-1]] <= n:
             queue.pop()
         queue.append(i)
         
-        # 2. 出
+        # 2. 出 排除超出窗口
         if queue[0] + k <= i:
             queue.popleft()
 
-        # 3. 记录答案
+        # 3. 记录答案 队列永远从大到小排列
         if i >= k - 1:
             ans.append(nums[queue[0]])
 
