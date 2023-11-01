@@ -59,40 +59,9 @@ layout: default
 - nonlocal声明只在当对函数外部mutable变量赋值时必须: 在Python 2中，闭包只能读外部函数的变量，而不能改写它。为了解决这个问题，Python 3引入了nonlocal关键字，在闭包内用nonlocal声明变量，就可以让解释器在外层函数中查找变量名。同理在Python 中，当你想在函数内更改全局变量的值时，需要使用global 关键字
 
 # 排序
-- 大部分有序排序
-	- 1、最理想情况（数据预先已排好序），插入和冒泡都只需要进行n次循环和比较就结束了，不需要进行数据交换（传值），而选择要进行$n^2\over2$次循环和比较，显然选择明显落后于冒泡和插入
-	- 2、平均情况（数据完全随机），插入要进行$n^2\over4$次循环和比较，以及同是$n^2\over4$次的数据复制（传值）而冒泡要进行$n^2\over2$次循环和比较，$n^2\over4$次交换，每次交换等于3次数据复制（传值），因此它的循环比较次数和和数据复制次数分别是插入的2倍和3倍，因此冒泡的耗时是插入的2-3倍之间
- 	- 如果排序对象是简单数据，每次比较操作的耗时大于数据复制，则冒泡的耗时会比较接近插入的2倍；如果排序对象是很长的数据结构，每次复制数据的耗时远大于比较，则冒泡的耗时会更接近插入的3倍。
-- 前K大 1. 冒泡 K 遍 2. 维护大小为K最小堆 3.递归划分（快排 quickselect）
 - 逆序对: 归并排序
 
 ```python
-def bubblesort(arr):
-    swapped = False
-    for n in range(len(arr) - 1, 0, -1):
-        for i in range(n):
-            if arr[i] > arr[i + 1]:
-                swapped = True
-                arr[i], arr[i + 1] = arr[i + 1], arr[i]       
-        if not swapped:
-            return
-
-def selectionSort(arr):
-    for idx in range(len(arr)):
-        min_v, min_idx = arr[idx], ind
-        for j in range(idx + 1, len(arr)):
-            if array[j] < min_v:
-                min_v, min_idx = array[j], j
-        arr[idx], arr[min_idx] = arr[min_idx], array[idx]
-
-def insertionSort(arr):
-    for i, key in enumerate(arr):
-        prev = i - 1
-        while j >= 0 and arr[j] > key:
-            arr[prev + 1] = arr[prev]
-            j -= 1
-        arr[prev + 1] = key
-
 def mergeSort(arr, left, right, output=None):
     if output is None:
         output = [0] * len(arr)
@@ -132,6 +101,11 @@ def mergeSort(arr, left, right, output=None):
             arr[p] = output[p]
  
     return inv_count
+```
+
+- 划分包括荷兰旗问题
+
+```python
 
 # Lomuto partition(slow but easy)
 # all elements with values less or equal to the pivot come before the pivot
@@ -175,24 +149,121 @@ def partition(arr, low, high):
  
         arr[i], arr[j] = arr[j], arr[i]
 
-# for Lomuto partition
-# when adapted for Hoare partition, only choose median of three(low, high, median) 
-def medianofthree(arr, low, high):
+def sortColors(self, nums: List[int]) -> None:
+    """
+    Dutch National Flag problem solution.
+    """
+    write_0 = 0
+    # for all idx < write : nums[idx < write] = 0
+    write_2 = len(nums) - 1
+    # for all idx > p2 : nums[idx > p2] = 2
+    read = 0
+    while read <= write_2:
+        if nums[read] == 0:
+            nums[read], nums[write_0] = nums[write_0], nums[read]
+            write_0 += 1
+            read += 1
+        elif nums[read] == 2:
+            nums[write_2], nums[read] = nums[read], nums[write_2]
+            write_2 -= 1
+        else:
+            read += 1
+        # print(nums, read, write_0, write_2)
+```
+
+- 大部分有序排序
+	- 1、最理想情况（数据预先已排好序），插入和冒泡都只需要进行n次循环和比较就结束了，不需要进行数据交换（传值），而选择要进行$n^2\over2$次循环和比较，显然选择明显落后于冒泡和插入
+	- 2、平均情况（数据完全随机），插入要进行$n^2\over4$次循环和比较，以及同是$n^2\over4$次的数据复制（传值）而冒泡要进行$n^2\over2$次循环和比较，$n^2\over4$次交换，每次交换等于3次数据复制（传值），因此它的循环比较次数和和数据复制次数分别是插入的2倍和3倍，因此冒泡的耗时是插入的2-3倍之间
+ 	- 如果排序对象是简单数据，每次比较操作的耗时大于数据复制，则冒泡的耗时会比较接近插入的2倍；如果排序对象是很长的数据结构，每次复制数据的耗时远大于比较，则冒泡的耗时会更接近插入的3倍。
+
+```python
+def bubblesort(arr):
+    swapped = False
+    for n in range(len(arr) - 1, 0, -1):
+        for i in range(n):
+            if arr[i] > arr[i + 1]:
+                swapped = True
+                arr[i], arr[i + 1] = arr[i + 1], arr[i]       
+        if not swapped:
+            return
+
+def selectionSort(arr):
+    for idx in range(len(arr)):
+        min_v, min_idx = arr[idx], ind
+        for j in range(idx + 1, len(arr)):
+            if array[j] < min_v:
+                min_v, min_idx = array[j], j
+        arr[idx], arr[min_idx] = arr[min_idx], array[idx]
+
+def insertionSort(arr):
+    for i, key in enumerate(arr):
+        prev = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[prev + 1] = arr[prev]
+            j -= 1
+        arr[prev + 1] = key
+```
+
+- 快排和中位数选择
+
+```python
+def median_of_three(arr, low, high):
     mid = (low + high) // 2
-    if arr[mid] < arr[low]:
-        arr[low], arr[mid] = arr[mid], arr[low]
-    if arr[high] < arr[low]
-        arr[low], arr[high] = arr[high], arr[low]
-    if arr[mid] < arr[high]
-        arr[low], arr[mid] = arr[mid], arr[low]
+    if arr[low] < arr[mid]:
+        if arr[mid] < arr[high]:
+            return mid
+        elif arr[low] < arr[high]:
+            return high
+        else:
+            return low
+    else:
+        if arr[low] < arr[high]:
+            return low
+        elif arr[mid] < arr[high]:
+            return high
+        else:
+            return mid
+
+def lomuto_partition(arr, low, high):
+    pivot_index = median_of_three(arr, low, high)
+    arr[pivot_index], arr[high] = arr[high], arr[pivot_index]  # Move pivot to end
+    
     pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+def hoare_partition(arr, low, high):
+    pivot_index = median_of_three(arr, low, high)
+    pivot = arr[pivot_index]
+    
+    i = low
+    j = high
+    while True:
+        while arr[i] < pivot:
+            i += 1
+        while arr[j] > pivot:
+            j -= 1
+        if i >= j:
+            return j
+        arr[i], arr[j] = arr[j], arr[i]
+        i += 1
+        j -= 1
 
 def quickSort(arr, low, high):
     if (low < high):
         pi = partition(arr, low, high)
         quickSort(arr, low, pi - 1)
         quickSort(arr, pi + 1, high)
+```
 
+- 前K大 1. 冒泡 K 遍 2. 维护大小为K最小堆 3.递归划分（快排 quickselect）
+
+```python
 def topKlargest(arr, k):
     left = 0
     right = len(arr)-1
