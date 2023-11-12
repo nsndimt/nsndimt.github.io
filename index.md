@@ -9,57 +9,80 @@ layout: default
 # 致谢
 - [灵茶山艾府](https://space.bilibili.com/206214)
 - [OIWiki](https://oi-wiki.org/)
+- [ACWing](https://www.acwing.com/)
 
-# Python语言
-- `[i] + arr + [-1]`比`[i, *arr, i+1]`因为数组拼接是O(N)
-- 二维数组创建和下标访问就用`[x[:] for x in [[0]*1000]*1000]`除非有向量化运算才用`numpy`
-- `a, b = a + b, a - b` 的计算顺序为：
-	- `a + b`
-	- `a - b`
-	- 赋值 a
-	- 赋值 b
-- `a = b = 1 + 1` 的计算顺序为：
-	- `1 + 1`
-	- 赋值 a
-	- 赋值 b
- - if `i < len(arr) and arr[i] > 0` 的计算顺序为：
-     -  `i < len(arr)``
-     -  `arr[i] > 0` 如果第一个条件为假则不计算(short circuiting)
-- `a <= b <= c` 的计算顺序为：
-	- `a <= b`
-	- `b <= c`
-- `max(iterable, *, default=obj, key=None)` 和 `max(iterable, *, default=obj, key=None)`
-    - default指定iterable为空时返回值
-    - key指定比较值
-- `min` and `argmin` 一次性拿到 `min_v, min_idx = min(enumerate(x), key=operator.itemgetter(1)` 
-- `enumerate(iterable, start=0)` 用于 `enumerate(arr[1:], start=1)`
-- `reversed(list(enumerate(iterable)))`必须list不然报错`enumerate object is not reversible`
-- `defaultdict(list)` 空数组 `defaultdict(int)` 默认为0 `defaultdict(lambda:-1)` 默认为-1
+
+# Python语言特性
+- 避免$O(N)$复杂度操作
+    - 数组拼接: `[i] + arr + [-1]`比`[i, *arr, i+1]`慢
+    - 数组和字符串切片: 传递下标而不是数组或字符串
+    - 字符串拼接: `' '.join()`
+    - 数组`pop`: $O(1)$ to pop the last element of a Python list, and $O(N)$ to pop an arbitrary element 
+
+- 多维数组创建
+    - `[x[:] for x in [[0]*1000]*1000]`
+    - `[x.copy() for x in [[0]*1000]*1000]`
+    - `np.ndarray`在下标访问上更慢, 除非有向量化运算才用`numpy`
+- 灵活利用计算顺序
+    - `a, b = a + b, a - b` 的计算顺序为：
+        - `a + b`
+        - `a - b`
+        - 赋值 a
+        - 赋值 b
+    - `a = b = 1 + 1` 的计算顺序为：
+        - `1 + 1`
+        - 赋值 a
+        - 赋值 b
+    - if `i < len(arr) and arr[i] > 0` 的计算顺序为：
+        -  `i < len(arr)`
+        -  `arr[i] > 0` 如果第一个条件为假则不计算(short circuiting)
+    - `a <= b <= c` 的计算顺序为：
+        - `a <= b`
+        - `b <= c`
+- `max(iterable, *, default=obj, key=None)`: default指定iterable为空时返回值, key指定比较值
+- `min` and `argmin` 一起:  `min_v, min_idx = min(enumerate(x), key=operator.itemgetter(1)` 
+- `enumerate(iterable, start=0)` 可指定开始下标: `enumerate(arr[1:], start=1)`
+- `reversed(list(enumerate(iterable)))`必须用list不然报错`enumerate object is not reversible`
 - `{'jack',}` 等价 `set('jack')` 以及 `{'jack':1}` 等价 `dict(jack=1)`
-- python 整除取余向负无穷取整 `n mod base = n - math.floor(n/base) * base` 要模仿C的整除取余行为(向零取整)用int() `n - int(n/base) * base`
+- python 整除取余向负无穷取整 `n mod base = n - math.floor(n/base) * base` 要模仿C的整除取余行为(向零取整)用`int()`: `n - int(n/base) * base`
     - `7//4 = 1` 和 `7%4 = 3`
     - `-7//4 = -2` 和 `-7%4 = 1`
     - `7//-4 = -2` 和 `7%-4 = -1`
     - `-7//-4 = 1` 和 `-7%-4 = -3`
 - 字符串整数/进制转换
-    - `int(x, base=10)` `str("0x21")`
+    - `int(x, base=10)` 和 `str("0x21")`
     - 十进制: `digits = list(map(int, str(x)))`
     - 二进制 0b前缀: `digits = [int(x) for x in bin(x)[2:]]`
     - 八进制 0o前缀: `digits = [int(x) for x in oct(x)[2:]]`
     - 十六进制 0x前缀: `digits = [int(x) for x in hex(x)[2:]]`
-- 活用itertools
+- `itertools`包实现了`defaultdict`, `deque`和`Counter`
+    - `defaultdict(list)` 空数组
+    - `defaultdict(int)` 默认为0
+    - `defaultdict(lambda:-1)` 默认为-1
+    - `Counter.total()`求和
+- `itertools`包实现了排列, 组合, 切片没必要自己写递归
     - `product('ABCD', repeat=2)` --> AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
     - `permutations('ABCD', 2)` --> AB AC AD BA BC BD CA CB CD DA DB DC
     - `combinations('ABCD', 2)` -->AB AC AD BC BD CD
     - `combinations_with_replacement('ABCD', 2)` --> AA AB AC AD BB BC BD CC CD DD
-    - `islice(iterable, start, stop[, step])` `arr[start:end:step]` O(end-start)
-    - `groupby(iterable, key=None)`
-        - ``[k for k, g in groupby('AAAABBBCCDAABBB')]`` --> A B C D A B
-        - ``[list(g) for k, g in groupby('AAAABBBCCD')]`` --> AAAA BBB CC D
-- nonlocal声明只在当对函数外部mutable变量赋值时必须: 在Python 2中，闭包只能读外部函数的变量，而不能改写它。为了解决这个问题，Python 3引入了nonlocal关键字，在闭包内用nonlocal声明变量，就可以让解释器在外层函数中查找变量名。同理在Python 中，当你想在函数内更改全局变量的值时，需要使用global 关键字
+    - `islice(iterable, start, stop[, step])`避免了`arr[start:end:step]`产生的拷贝
+- `math`包实现了排列, 组合, 阶乘, GCD, LCM, 开方取整而且因为是内置函数所以更快
+```python
+pow(base, exp, mod=None)
+abs(n)
 
-# 排序
-- 逆序对: 归并排序
+math.comb(x, y)
+math.perm(x, y)
+math.factorial(n)
+math.isqrt(x) == math.floor(math.sqrt(x))
+math.gcd(x, y)
+math.lcm(x, y)
+
+isodd = (n & 1 == 1) = (n % 2 == 1)
+```
+
+# Sorting
+- Merge sort ->  inversion count
 
 ```python
 def mergeSort(arr, left, right, output=None):
@@ -103,7 +126,7 @@ def mergeSort(arr, left, right, output=None):
     return inv_count
 ```
 
-- 划分包括荷兰旗问题
+- Partition -> Dutch Flag Problem
 
 ```python
 
@@ -112,7 +135,7 @@ def mergeSort(arr, left, right, output=None):
 # all elements with values greater than the pivot come after it
 # return exact pivot
 
-def partition(arr, low, high):
+def lomuto_partition(arr, low, high):
     # care about where pivot is
     pivot = arr[high]
 
@@ -128,9 +151,10 @@ def partition(arr, low, high):
 # all elements with values less or equal to the pivot come before the pivot
 # all elements with values greater or equal to the pivot come after it
 # dose not return exact pivot
-def partition(arr, low, high):
+def hoare_partition(arr, low, high, pivot=None):
     # not care about where pivot is
-    pivot = arr[high]
+    if not pivot:
+        pivot = arr[high]
 
     i = low - 1
     j = high + 1
@@ -149,10 +173,7 @@ def partition(arr, low, high):
  
         arr[i], arr[j] = arr[j], arr[i]
 
-def sortColors(self, nums: List[int]) -> None:
-    """
-    Dutch National Flag problem solution.
-    """
+def dutch_national_flag(self, nums: List[int]) -> None:
     write_0 = 0
     # for all idx < write : nums[idx < write] = 0
     write_2 = len(nums) - 1
@@ -170,11 +191,6 @@ def sortColors(self, nums: List[int]) -> None:
             read += 1
         # print(nums, read, write_0, write_2)
 ```
-
-- 大部分有序排序
-	- 1、最理想情况（数据预先已排好序），插入和冒泡都只需要进行n次循环和比较就结束了，不需要进行数据交换（传值），而选择要进行$n^2\over2$次循环和比较，显然选择明显落后于冒泡和插入
-	- 2、平均情况（数据完全随机），插入要进行$n^2\over4$次循环和比较，以及同是$n^2\over4$次的数据复制（传值）而冒泡要进行$n^2\over2$次循环和比较，$n^2\over4$次交换，每次交换等于3次数据复制（传值），因此它的循环比较次数和和数据复制次数分别是插入的2倍和3倍，因此冒泡的耗时是插入的2-3倍之间
- 	- 如果排序对象是简单数据，每次比较操作的耗时大于数据复制，则冒泡的耗时会比较接近插入的2倍；如果排序对象是很长的数据结构，每次复制数据的耗时远大于比较，则冒泡的耗时会更接近插入的3倍。
 
 ```python
 def bubblesort(arr):
@@ -204,7 +220,7 @@ def insertionSort(arr):
         arr[prev + 1] = key
 ```
 
-- 快排和中位数选择
+- Quick Sort and Median of  Three
 
 ```python
 def median_of_three(arr, low, high):
@@ -224,35 +240,15 @@ def median_of_three(arr, low, high):
         else:
             return mid
 
-def lomuto_partition(arr, low, high):
+def lomuto_quicksort_partition(arr, low, high):
     pivot_index = median_of_three(arr, low, high)
     arr[pivot_index], arr[high] = arr[high], arr[pivot_index]  # Move pivot to end
     
-    pivot = arr[high]
-    i = low - 1
-    for j in range(low, high):
-        if arr[j] <= pivot:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
-    arr[i + 1], arr[high] = arr[high], arr[i + 1]
-    return i + 1
+    return lomuto_partition(arr, low, high)
 
-def hoare_partition(arr, low, high):
+def hoare_quicksort_partition(arr, low, high):
     pivot_index = median_of_three(arr, low, high)
-    pivot = arr[pivot_index]
-    
-    i = low
-    j = high
-    while True:
-        while arr[i] < pivot:
-            i += 1
-        while arr[j] > pivot:
-            j -= 1
-        if i >= j:
-            return j
-        arr[i], arr[j] = arr[j], arr[i]
-        i += 1
-        j -= 1
+    return hoare_partition(arr, low, high, arr[pivot_index])
 
 def quickSort(arr, low, high):
     if (low < high):
@@ -261,10 +257,18 @@ def quickSort(arr, low, high):
         quickSort(arr, pi + 1, high)
 ```
 
-- 前K大 1. 冒泡 K 遍 2. 维护大小为K最小堆 3.递归划分（快排 quickselect）
+- Top K largest
+    - Bubble sort/Selection Sort K times
+        - time complexity $NK$
+    - Maintain min heap with size K
+        - time complexity $NlogK$
+    - Construct max heap and pop K
+        - Construction heap is $N$
+        - time complexity $KlogN+N$
+    - recursive partition (quickselect)
 
 ```python
-def topKlargest(arr, k):
+def quickSelect(arr, k):
     left = 0
     right = len(arr)-1
     while True:
@@ -286,9 +290,32 @@ def findKthLargest(self, nums: List[int], k: int) -> int:
         else:
             heapq.heappushpop(heap, n)
     return heapq.heappop(heap)
+
+def findKthLargest(self, nums: List[int], k: int) -> int:
+    heap = []
+    for n in nums:
+        if len(heap) < k:
+            heapq.heappush(heap, n)
+        else:
+            heapq.heappushpop(heap, n)
+    return heapq.heappop(heap)
+
+
+# Top K/Kth smallest
+heapq.heapify([n for n in nums])
+for i in range(k):
+    e = heapq.heappop(heap, n)
+
+for n in nums:
+    if len(heap) < k:
+        heapq.heappush(heap, -n)
+    else:
+        heapq.heappushpop(heap, -n)
+-heap[0]
 ```
 
-- `cmp_to_key` 定义复杂顺序 `operator.itemgetter`替代lambda
+- `cmp_to_key` 自定义定义比较函数 
+- `operator.itemgetter`替代lambda
 
 ```python
 def cmp(a, b):
@@ -300,30 +327,11 @@ def cmp(a, b):
         return 0
 
 sorted([(1, 2), (4, 2)], key=functools.cmp_to_key(cmp))
+sorted([(1, 2), (4, 2)], key=operator.itemgetter(0))
+
 ```
 
-- 自定义`heapq`和`SortedContainer`比较函数
-
-```python
-class Node:
-    def __init__(self, val: int):
-        self.val = val
-    # 有eq才是全序没有偏序
-    def __eq__(self, other):
-        return self.val == other.val
-
-	def __lt__(self, other):
-        return self.val < other.val
-    # lt，gt两者有一个即可 a lt b == b gt a
-    def __gt__(self, other):
-        return self.val > other.val
-
-heap = [Node(2), Node(0), Node(1), Node(4), Node(2)]
-heapq.heapify(heap)
-print(heap)  # output: [Node value: 0, Node value: 2, Node value: 1, Node value: 4, Node value: 2]
-```
-
-# 前缀和 差分
+# Prefix Sum
 
 ```python
 # 下标从0开始 第一位无用
@@ -351,7 +359,11 @@ for i in range(m):
 
 def query(row1, col1, row2, col2):
     return - prefix_sum[row1][col2+1] - prefix_sum[row2+1][col1] + prefix_sum[row2+1][col2+1] + prefix_sum[row1][col1]
+```
 
+# Difference array 
+
+```python
 # 下标从0开始
 # version1 不padding
 diff = [arr[0]] + [arr[i] - arr[i - 1] for i in range(1, len(arr))]
@@ -421,7 +433,7 @@ def recover():
     return diff
 
 ```
-# 树状数组
+# Binary Indexed Tree(Fenwick Tree)
 ![image](/assets/array_tree.png)
 
 ```python
@@ -459,7 +471,7 @@ class BinaryIndexTree:
 
 # 双指针 滑动窗口
 
-- 寻找单调性进行优化O(N^2) 循环
+- 寻找单调性进行优化 $n^2$ 循环
   - 同向双指针 子数组 子序列
   - 对向双指针 排除答案
 - 快慢指针
@@ -554,7 +566,7 @@ def alternatingSubarray(self, nums: List[int]) -> int:
     return ans
 ```
 
-# 二分
+# Binary Search
 
 ```python
 def lastlessequal(arr, v):
@@ -621,7 +633,7 @@ def equal(arr, v):
     - 下一次二分查找区间：不能再查找(区间不包含)mid，防止死循环 => 区间恒缩小
     - 判断条件，返回值：取决于寻找什么 和区间开闭无关
 
-## 二分和bisect关系  
+## Binary Search using bisect  
 
 | position arr[p]     | bisect return p                 | minium possible value   | maxium possible value        |
 | -----------         | -----------                     | -----------             | -----------                  |
@@ -631,7 +643,7 @@ def equal(arr, v):
 | first great or equal| bisect.bisect_left(arr, v)      | 0                       | len(arr) (all less)          |
 
 
-## 循环不变量
+## Loop invariant
 
 | position            | if condition    | return                       | red         | blue        |
 | -----------         | -----------     | -----------                  | ----------- | ----------- |
@@ -641,35 +653,35 @@ def equal(arr, v):
 | first great or equal| arr[mid] < v    | right                        | < v         | >= v        |
 | equal               | arr[mid] != v   | -1 all colored => not found  | < v         | > v         |
 
-## 开区间
+## `(left, right)`
 - 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
 - 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
 - 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
 - `left = -1; right = 1` => `mid = (left + right) // 2`
 - 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
 
-## 左闭右开区间
+## `[left, right)`
 - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
 - 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
 - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
 - `left = 0; right = 1` => `mid = (left + right) // 2`
 - 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
 
-## 闭区间
+## `[left, right]`
 - 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
 - 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
 - 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
 - `left = 0; right = 0` => `mid = (left + right) // 2`
 - 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
 
-## 左开右闭区间
+## `(left, right]`
 - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
 - 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
 - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
 - `left = -1; right = 0` => `mid = (left + right + 1) // 2`
 - 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
 
-# 递归
+# Recursion
 
 ## BFS
 
@@ -852,9 +864,7 @@ def permute(self, nums: List[int]) -> List[List[int]]:
     return ans
 ```
 
-# 数学
-
-## 数论
+# Number theory
 
 ```python
 def gcd(x, y):
@@ -870,23 +880,6 @@ def binpow(a, b, mod=None):
         a = ((a * a) % mod) if mod else (a * a)
         b >>= 1
     return res
-# 内置函数更快
-pow(base, exp, mod=None)
-
-math.comb(x, y)
-math.perm(x, y)
-math.factorial(n)
-math.isqrt(x) == math.floor(math.sqrt(x))
-math.gcd(x, y)
-math.lcm(x, y)
-
-maxab = lambda a, b: a if a > b else b
-minab = lambda a, b: a if a < b else b
-abs = n if n > 0 else -n
-isodd = (n & 1 == 1) = (n % 2 == 1)
-
-aseert n^n == 0
-assert -n == ~n + 1
 
 def is_prime(n):
     if n <= 1:
@@ -897,7 +890,6 @@ def is_prime(n):
         if number % x == 0:
             return False
     return True
-
 
 def breakdown(n):
     result = []
@@ -920,31 +912,7 @@ def prime(n):
     return [i for i, isprime in enumerate(flag) if isprime]
 ```
 
-## 博弈
-
-```python
-@cache
-def dfs(s):
-    pos_a = []
-    start = 0
-    while (pos := s.find('++', start)) != -1:
-        start = pos + 1
-        pos_a.append(pos)
-
-    if len(pos_a) == 0:
-        return False # always lose when no next state
-    else:
-        states = []
-        for pos in pos_a:
-            new_s = s[:pos] + '--' + s[pos+2:]
-            states.append(dfs(new_s))
-        if all(states):
-            return False # always lose when all next state is alway win
-        else:
-            return True # always win when at least one next state is alway lose
-```
-
-## 几何
+# Interval
 
 ```python
 def dont_overlap(x1, y1, x2, y2):
@@ -970,7 +938,7 @@ def merge(intervals):
     return res
 ```
 
-## 排列
+# Permutation
 
 ```python
 def nextPermutation(self, nums: List[int]) -> None:
@@ -1017,6 +985,41 @@ def getPermutation(self, n: int, k: int) -> str:
         # print(ans)
     return "".join(ans)
 ```
+# Combination
+```python
+# 设元素范围从 0 到 n −1 挨个判断每个元素是否在集合 s 中：
+for i in range(n):
+    if (s >> i) & 1:  # i 在 s 中
+        # 处理 i 的逻辑
+
+# 设元素范围从 0 到 n −1 从空集枚举到全集
+for s in range(1 << n):
+    # 处理 s 的逻辑
+
+# 从大到小枚举 s 的所有非空子集
+# 简单减一不行10101→10100→10011(不是子集)
+# 我们要做的相当于「压缩版」的二进制减法 10101→10100→10001→10000→00101
+# 忽略掉 10101中的两个 0，数字的变化和二进制减法是一样的，即111→110→101→100→011
+# 如何快速找到下一个子集呢？以10100→10001为例说明
+# 普通的二进制减法会把最低位的1变成0，同时1右边的0变成1，即 10100→10011
+# 「压缩版」的二进制减法也是类似的，把最低位的1变成0，但同时对于1右边的0只保留在s=10101中的1
+# 所以是 10100→10001 怎么保留？&10101就行。
+sub = s
+while sub:
+    # 处理 sub 的逻辑
+    sub = (sub - 1) & s
+
+# Gosper's Hack
+# 生成n元集合所有 k元子集的算法
+s = (1 << k) - 1
+while s < (1 << n):
+    bits = [i for i, c in enumerate(bin(s)[:1:-1]) if c == '1']
+    # bits存储所有不为零的位置
+    lb = s & -s
+    x = s + lb
+    s = (s ^ x) // lb >> 2 | x
+```
+
 # DP
 
 ## 最长递增子序列
@@ -1112,7 +1115,7 @@ def rob(self, root: Optional[TreeNode]) -> int:
     return max(dfs(root))
 ```
 
-## 状压DP
+## 状压DP(bitwise operation)
 
 ```python
 #全集 设元素范围从 0 到 3
@@ -1147,38 +1150,6 @@ s # 101100
 ~s # 010011
 (~s)+1 # 010100 根据补码的定义，这就是 -s  最低1左侧取反，右侧不变
 s & -s # 000100 lowbit
-
-# 设元素范围从 0 到 n −1 挨个判断每个元素是否在集合 s 中：
-for i in range(n):
-    if (s >> i) & 1:  # i 在 s 中
-        # 处理 i 的逻辑
-
-# 设元素范围从 0 到 n −1 从空集枚举到全集
-for s in range(1 << n):
-    # 处理 s 的逻辑
-
-# 从大到小枚举 s 的所有非空子集
-# 简单减一不行10101→10100→10011(不是子集)
-# 我们要做的相当于「压缩版」的二进制减法 10101→10100→10001→10000→00101
-# 忽略掉 10101中的两个 0，数字的变化和二进制减法是一样的，即111→110→101→100→011
-# 如何快速找到下一个子集呢？以10100→10001为例说明
-# 普通的二进制减法会把最低位的1变成0，同时1右边的0变成1，即 10100→10011
-# 「压缩版」的二进制减法也是类似的，把最低位的1变成0，但同时对于1右边的0只保留在s=10101中的1
-# 所以是 10100→10001 怎么保留？&10101就行。
-sub = s
-while sub:
-    # 处理 sub 的逻辑
-    sub = (sub - 1) & s
-
-# Gosper's Hack
-# 生成n元集合所有 k元子集的算法
-s = (1 << k) - 1
-while s < (1 << n):
-    bits = [i for i, c in enumerate(bin(s)[:1:-1]) if c == '1']
-    # bits存储所有不为零的位置
-    lb = s & -s
-    x = s + lb
-    s = (s ^ x) // lb >> 2 | x
 ```
 
 ## 数位DP
@@ -1239,7 +1210,7 @@ def atMostNGivenDigitSet(self, digits: List[str], n: int) -> int:
     return f(0, True, False)
 ```
 
-## 背包
+## knapsack
 
 - 学会一维数组方案， 极大节省时间:
 
@@ -1482,7 +1453,7 @@ def findMinArrowShots(self, points: List[List[int]]) -> int:
 ```
 
 
-# 字符串
+# String
 
 ```python
 str.split(sep=',', maxsplit=1)
@@ -1499,9 +1470,6 @@ str.startswith(suffix[, start[, end]])
 str.endswith(suffix[, start[, end]])
 # can provide multiple suffix
 
-s[start:end]
-# slicing in Python is O(n)
-
 str.find(sub[, start[, end]])
 # return -1 if not find
 
@@ -1510,7 +1478,11 @@ s_prefix = [s[:i+1] for i in range(len(s))]
 
 def is_palindrome(s):
     return s == reversed(s)
+```
 
+## KMP
+
+```python
 def build_prefix_table(pattern):
     prefix_table = [0] * len(pattern)
     length = 0
@@ -1557,7 +1529,7 @@ def kmp_search(text, pattern):
 
 ```
 
-# 前缀树
+## Prefix Tree(Trie)
 
 ```python
 class TrieNode:
@@ -1612,7 +1584,7 @@ class Trie:
         return ans
 ```
 
-# 单调栈 单调队列
+# Montonic Stack
 
 ```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
@@ -1659,7 +1631,11 @@ for i, x in list(enumerate(arr))[::-1]:
         previous_less_or_equal[s.pop()] = i
     next_less[i] = -1 if len(s) == 0 else s[-1]
     s.append(i)
+```
 
+# Montonic Queue
+
+```python
 # 单调队列
 def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
     N = len(nums)
@@ -1682,7 +1658,7 @@ def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
     return ans
 ```
 
-# 并查集
+# Union Set
 
 ```python
 class DisjointSet:
@@ -1719,7 +1695,8 @@ class DisjointSet:
         self.count -= 1
 ```
 
-# 图
+# Graph
+- Topological Sort
 
 ```python
 def topologicalSort():
@@ -1741,6 +1718,14 @@ def topologicalSort():
             indegree[neighbor] -= 1
             if indegree[neighbor] == 0:
                 queue.append(neighbor)
+```
+
+- Floyd multi source shortest path
+    - can deal with negative edge but not negative cycle
+    - time complexity $O(N^2)$
+    - space complexity $O(N^3)$
+
+```python
 '''
 e:边集
 adj:邻接表
@@ -1753,22 +1738,25 @@ for k in range(n):
 for u, v, w in edges:
     dis[u][v] = w
     dis[v][u] = w
-        
-#floyd 多源最短路算法 可以处理负权边不能处理负环
-# 空间复杂度O(N^2)，时间复杂度O(N^3)
+
 for k in range(n):
     for x in range(n):
         for y in range(n):
             dis[x][y] = min(dis[x][y], dis[x][k] + dis[k][y])
 
+```
+
+- Bellman-Ford single source shortest path
+    - can deal with negative edge but not negative cycle
+    - time complexity $O(NE)$ when the graph is dense use dijkstra instead
+    - space complexity $O(N)$
+
+```python
 adj = defaultdict(list)
 for u, v, w in edges:
     adj[u].append((v, w))
     adj[v].append((u, w))
 
-
-# Bellman-Ford 有负权的图的最短路
-# 时间复杂度为O(NE)，e为图的边数，在图为稠密图的时候，是不可接受的。复杂度太高。
 dis = [(1<<31)] * n
 dis[s] = 0
 for i in range(n):
@@ -1809,9 +1797,17 @@ while queue:
 dis = [(1<<31)] * n
 dis[s] = 0
 
-# dijkstra 单源最短路算法，其要求图中的边全部非负
-# 使用二叉堆优化后的Dijkstra算法的复杂度为O((E+N)logN)，因此该优化适合于稀疏图
-# 如果是稠密图极端情况E = n*(n-1)/2，这时候时间复杂度就退化为O(N^2logN)了, 得不偿失。
+```
+
+- Dijkstra single source shortest path
+    - cannot deal with negative edge
+    - time complexity $O((N + E))logN$ with heap, $O(N^2 + E)$ without heap
+        - sparse graph when $E << N$: with heap is better
+        - dense graph when $E \approx N^2$: without heap is better
+    - space complexity $N$
+
+```python
+
 q = [(0, s)]
 vis = set()
 while q:
@@ -1825,46 +1821,88 @@ while q:
             heapq.heappush(q, (dis[v], v))
 ```
 
-# 堆
-- 建堆是O(N)所以仍然比排序在Top K问题上有优势
+# Heap
+
+|        | insert | find-min | delete-min | decrease-key |
+|:------:|:--------------:|:----------------------:|:------------------------:|:------------:|
+| 二叉堆 |   $O(\log n)$  |         $O(1)$         |        $O(\log n)$       |    $O(\log n)$    |
 
 ```python
-# Top K/Kth largest
-# construct maximum heap and pop first K element from it
-heapq.heapify([-n for n in nums])
-for i in range(k):
-    # top i+1 th largest element
-    e = -heapq.heappop(heap, n)
-# Time complexity: O(KlogN+N)
-# Space complexity: O(N)
+# implement max heap with array
 
-# filter through array and maintain K largest element dynamically
-heap = []
-for n in nums:
-    if len(heap) < k:
-        heapq.heappush(heap, n)
-    else:
-        heapq.heappushpop(heap, n)
-# top kth largest element
-heap[0]
-# Time complexity: O(NlogK)
-# Space complexity: O(K)
+def push(h, elem):
+    heap.append(elem)
+    x = len(h) - 1
+    # swap with father until find father bigger
+    while x > 1 and h[x] > h[x // 2]:
+        h[x], h[x // 2] = h[x // 2], h[x]
+        x //= 2
 
-# Top K/Kth smallest
-heapq.heapify([n for n in nums])
-for i in range(k):
-    e = heapq.heappop(heap, n)
+# cannot decrease
+def inc(h, idx, elem):
+    heap[idx] = elem
+    x = idx
+    # swap with father until find father bigger
+    while x > 1 and h[x] > h[x // 2]:
+        h[x], h[x // 2] = h[x // 2], h[x]
+        x //= 2
 
-for n in nums:
-    if len(heap) < k:
-        heapq.heappush(heap, -n)
-    else:
-        heapq.heappushpop(heap, -n)
--heap[0]
+def pop(h):
+    h[0], h[-1] = h[-1], h[0]
+    ret = h.pop(-1)
+    n = len(h)
+    x = 0
+    while x * 2 < n:
+        t = x * 2
+        # choose bigger element in its child
+        if t + 1 < n and h[t + 1] > h[t]:
+            t += 1
+        # swap until find smaller child
+        if h[t] <= h[x]:
+            break
+        h[x], h[t] = h[t], h[x]
+        x = t
+
+    return ret
+
+def build(h):
+    n = len(h)
+    for x in range(n):
+        while x * 2 < n:
+            t = x * 2
+            # choose bigger element in its child
+            if t + 1 < n and h[t + 1] > h[t]:
+                t += 1
+            # swap until find smaller child
+            if h[t] <= h[x]:
+                break
+            h[x], h[t] = h[t], h[x]
+            x = t
 ```
 
 
-# 二叉搜索树
+# sortedcontainers heapq
+
+- 自定义`heapq`和`SortedContainer`比较函数
+
+```python
+class Node:
+    def __init__(self, val: int):
+        self.val = val
+    # 有eq才是全序没有偏序
+    def __eq__(self, other):
+        return self.val == other.val
+
+	def __lt__(self, other):
+        return self.val < other.val
+    # lt，gt两者有一个即可 a lt b == b gt a
+    def __gt__(self, other):
+        return self.val > other.val
+
+heap = [Node(2), Node(0), Node(1), Node(4), Node(2)]
+heapq.heapify(heap)
+print(heap)  # output: [Node value: 0, Node value: 2, Node value: 1, Node value: 4, Node value: 2]
+```
 
 - C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
 - 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
@@ -1878,7 +1916,25 @@ for n in nums:
     - 可以用index取值, 但要用peekitem(), O(logn)
     - 插入/刪除是O(logn)
     - 只根据key排序
-- 非递归遍历
+
+# heapq
+
+- C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
+- 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
+- `SortedList`用起来和List差不多
+    - 不要用`key`参数很容易弄出不满足全序的怪胎，自定义class实现eq和lt
+    - 不能利用下标赋值，可以用下标取值
+    - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(logn) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(logn)
+    - 按值删 discard(value)跟remove(value)的差别在前者在移除不存在的元素时不会引发错误 按索引删pop(index)
+    - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add() 一次加入多个可以用update(),或着使用`sl += some_iterable`
+- `SortedDict`基于`SortedList`实现只是额外存储对应的value，但只对key排序
+    - 可以用index取值, 但要用peekitem(), O(logn)
+    - 插入/刪除是O(logn)
+    - 只根据key排序
+
+# Binary Search Tree
+
+- Traversal
 
 ```python
 def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
@@ -1905,6 +1961,22 @@ def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         cur = cur.right
     return res
 
+def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+    ans = []
+    stack = deque([root])
+    while stack:
+        cur = stack.pop()
+        if cur is not None:
+            ans.append(cur.val)
+            stack.append(cur.left)
+            stack.append(cur.right)
+    return ans[::-1]
+```
+
+- Inorder Successor
+
+```python
+
 #无parent指针
 def inorderSuccessor(self, root: TreeNode, p: TreeNode) -> Optional[TreeNode]:
     successor = None
@@ -1930,19 +2002,10 @@ def inorderSuccessor(self, node: 'Node') -> 'Optional[Node]':
         node = node.parent
     return node.parent
 
-def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-    ans = []
-    stack = deque([root])
-    while stack:
-        cur = stack.pop()
-        if cur is not None:
-            ans.append(cur.val)
-            stack.append(cur.left)
-            stack.append(cur.right)
-    return ans[::-1]
 ```
 
-- 增删查改
+
+- Insert, Search, Delete
 
 ```python
 def insertIntoBST(self, root: TreeNode, val: int) -> TreeNode:
@@ -1995,7 +2058,9 @@ def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
 
 ```
 
-- LCA
+# Lowest Common Ancestor
+
+- Binary Search Tree
 
 ```python
 def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
@@ -2013,7 +2078,8 @@ def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -
             return node
 ```
 
-# 二叉树
+- On Binary Tree
+
 ```python
 def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
     def addParents(node, parent=None):
@@ -2036,25 +2102,41 @@ def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -
 
 def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
     lca = None
+    
     def find(node):
         nonlocal lca
-        p_find, q_find = False, False
         if node is None:
-            return p_find, q_find
-        elif node.val == p.val:
-            p_find = True
-        elif node.val == q.val:
-            q_find = True
+            return False
+        
+        left = find(node.left)
+        right = find(node.right)
+        mid = node.val == p.val or node.val == q.val
 
-        lp_find, lq_find = find(node.left)
-        rp_find, rq_find = find(node.right)
-        p_find = p_find or lp_find or rp_find
-        q_find = q_find or lq_find or rq_find
+        if mid + left + right >= 2:
+            lca = current_node
 
-        if p_find and q_find and lca is None:
-            lca = node
-
-        return p_find, q_find
+        return left or mid or right
+    
     find(root)
     return lca
+
+
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    
+    def find(node):
+        nonlocal lca
+        if node is None or node.val == p.val or node.val == q.val:
+            return node
+        
+        left = find(node.left)
+        right = find(node.right)
+
+        if left is not None and right is not None:
+            return node
+        elif left is not None:
+            return left
+        else:
+            return right
+    
+    return find(root)
 ```
