@@ -259,13 +259,14 @@ def quickSort(arr, low, high):
 
 - Top K largest
     - Bubble sort/Selection Sort K times
-        - time complexity $NK$
+        - time complexity $O(NK)$
     - Maintain min heap with size K
-        - time complexity $NlogK$
+        - time complexity $O(NlogK)$
     - Construct max heap and pop K
-        - Construction heap is $N$
-        - time complexity $KlogN+N$
+        - Construction heap is $O(N)$
+        - time complexity $O(KlogN+N)$
     - recursive partition (quickselect)
+        - time complexity $O(N)$
 
 ```python
 def quickSelect(arr, k):
@@ -282,6 +283,7 @@ def quickSelect(arr, k):
         else:
             right = p - 1
 
+# smaller than top K => poped when maintain min heap
 def findKthLargest(self, nums: List[int], k: int) -> int:
     heap = []
     for n in nums:
@@ -289,29 +291,29 @@ def findKthLargest(self, nums: List[int], k: int) -> int:
             heapq.heappush(heap, n)
         else:
             heapq.heappushpop(heap, n)
-    return heapq.heappop(heap)
+    return heap[0]
 
+# top K biggest => pop max heap K times
 def findKthLargest(self, nums: List[int], k: int) -> int:
+    heap = [-n for n in nums]
+    heapq.heapify(heap)
+    return [-heapq.heappop(heap) for i in range(k)][-1]
+
+# bigger than top K => poped when maintain max heap
+def findKthSmallest(self, nums: List[int], k: int) -> int:
     heap = []
     for n in nums:
         if len(heap) < k:
-            heapq.heappush(heap, n)
+            heapq.heappush(heap, -n)
         else:
-            heapq.heappushpop(heap, n)
-    return heapq.heappop(heap)
+            heapq.heappushpop(heap, -n)
+    return -heap[0]
 
-
-# Top K/Kth smallest
-heapq.heapify([n for n in nums])
-for i in range(k):
-    e = heapq.heappop(heap, n)
-
-for n in nums:
-    if len(heap) < k:
-        heapq.heappush(heap, -n)
-    else:
-        heapq.heappushpop(heap, -n)
--heap[0]
+# top K smallest => pop min heap K times
+def findKthSmallest(self, nums: List[int], k: int) -> int:
+    heap = [n for n in nums]
+    heapq.heapify(heap)
+    return [heapq.heappop(heap) for i in range(k)][-1]
 ```
 
 - `cmp_to_key` 自定义定义比较函数 
@@ -653,33 +655,34 @@ def equal(arr, v):
 | first great or equal| arr[mid] < v    | right                        | < v         | >= v        |
 | equal               | arr[mid] != v   | -1 all colored => not found  | < v         | > v         |
 
-## `(left, right)`
-- 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
-- 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
-- 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
-- `left = -1; right = 1` => `mid = (left + right) // 2`
-- 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
+## equivalent implementation
+- `(left, right)`
+    - 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
+    - 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
+    - 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
+    - `left = -1; right = 1` => `mid = (left + right) // 2`
+    - 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
 
-## `[left, right)`
-- 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
-- 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
-- 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
-- `left = 0; right = 1` => `mid = (left + right) // 2`
-- 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
+- `[left, right)`
+    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
+    - 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
+    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
+    - `left = 0; right = 1` => `mid = (left + right) // 2`
+    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
 
-## `[left, right]`
-- 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
-- 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
-- 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
-- `left = 0; right = 0` => `mid = (left + right) // 2`
-- 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
+- `[left, right]`
+    - 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
+    - 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
+    - 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
+    - `left = 0; right = 0` => `mid = (left + right) // 2`
+    - 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
 
-## `(left, right]`
-- 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
-- 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
-- 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
-- `left = -1; right = 0` => `mid = (left + right + 1) // 2`
-- 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
+- `(left, right]`
+    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
+    - 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
+    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
+    - `left = -1; right = 0` => `mid = (left + right + 1) // 2`
+    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
 
 # Recursion
 
@@ -1903,21 +1906,6 @@ heap = [Node(2), Node(0), Node(1), Node(4), Node(2)]
 heapq.heapify(heap)
 print(heap)  # output: [Node value: 0, Node value: 2, Node value: 1, Node value: 4, Node value: 2]
 ```
-
-- C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
-- 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
-- `SortedList`用起来和List差不多
-    - 不要用`key`参数很容易弄出不满足全序的怪胎，自定义class实现eq和lt
-    - 不能利用下标赋值，可以用下标取值
-    - 使用索引取值,  使用`in`搜索, 使用`index`搜索的时间复杂度是O(logn) 使用`bisect_left`，`bisect_right`搜索的时间复杂度是O(logn)
-    - 按值删 discard(value)跟remove(value)的差别在前者在移除不存在的元素时不会引发错误 按索引删pop(index)
-    - 没有append()/extend()/insert()，因为加入新的元素都有自己应该在的位置，应该使用add() 一次加入多个可以用update(),或着使用`sl += some_iterable`
-- `SortedDict`基于`SortedList`实现只是额外存储对应的value，但只对key排序
-    - 可以用index取值, 但要用peekitem(), O(logn)
-    - 插入/刪除是O(logn)
-    - 只根据key排序
-
-# heapq
 
 - C++ OrderedMap / Java TreeMap 在python中最接近的替代品 `from sortedcontainers import SortedList, SortedDict, SortedSet`
 - 内部并不是用二叉搜索树、平衡树，但是从概念上和复杂度上和二叉树更接近 大部分复杂度O(logn)
