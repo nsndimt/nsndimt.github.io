@@ -471,14 +471,10 @@ class BinaryIndexTree:
         return self.prefix_sum(right) - self.prefix_sum(left-1)
 ```
 
-# 双指针 滑动窗口
+# Two pointer
 
+- 同向双指针 子数组 子序列
 - 寻找单调性进行优化 $n^2$ 循环
-  - 同向双指针 子数组 子序列
-  - 对向双指针 排除答案
-- 快慢指针
-- 分组循环
-
 ```python
 #同向双指针 求最小窗口 区间越大越可能满足条件 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
@@ -522,7 +518,11 @@ def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
             p //= nums[left]
             left += 1
     return ans
+```
 
+- 对向双指针 排除答案
+
+```python
 def maxArea(self, height):
     i,j = 0, len(height) - 1
     maxarea = min(height[i], height[j]) * (j - i) 
@@ -533,7 +533,11 @@ def maxArea(self, height):
             j -= 1
         maxarea = max(min(height[i], height[j]) * (j - i), maxarea)
     return maxarea
+```
 
+- 快慢指针
+
+```python
 def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
     dummy = ListNode(next=head)
     
@@ -548,7 +552,11 @@ def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNod
 
     slow.next = slow.next.next
     return dummy.next
+```
 
+- 分组循环 滑动窗口
+
+```python
 def alternatingSubarray(self, nums: List[int]) -> int:
     n = len(nums)
     start = 0
@@ -764,7 +772,7 @@ def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
 ```
 ## DFS
 
-### 子集型
+- 子集型
 
 ```python
 # 单个元素的视角 选或不选
@@ -801,7 +809,7 @@ def subsets(self, nums: List[int]) -> List[List[int]]:
     return ans
 ```
 
-### 组合型
+- 组合型
 
 ```python
 # 单个元素的视角 选或不选
@@ -844,7 +852,7 @@ def combine(self, nums: List[int], k: int) -> List[List[int]]:
     return ans
 ```
 
-### 排列
+- 排列
 
 ```python
 def permute(self, nums: List[int]) -> List[List[int]]:
