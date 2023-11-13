@@ -42,7 +42,7 @@ layout: default
 - `max(iterable, *, default=obj, key=None)`: default指定iterable为空时返回值, key指定比较值
 - `min` and `argmin` 一起:  `min_v, min_idx = min(enumerate(x), key=operator.itemgetter(1)` 
 - `enumerate(iterable, start=0)` 可指定开始下标: `enumerate(arr[1:], start=1)`
-- `reversed(list(enumerate(iterable)))`必须用list不然报错`enumerate object is not reversible`
+- `reversed(list(enumerate(iterable)))`必须用`list`不然报错`enumerate object is not reversible`
 - `{'jack',}` 等价 `set('jack')` 以及 `{'jack':1}` 等价 `dict(jack=1)`
 - python 整除取余向负无穷取整 `n mod base = n - math.floor(n/base) * base` 要模仿C的整除取余行为(向零取整)用`int()`: `n - int(n/base) * base`
     - `7//4 = 1` 和 `7%4 = 3`
@@ -67,6 +67,7 @@ layout: default
     - `combinations_with_replacement('ABCD', 2)` --> AA AB AC AD BB BC BD CC CD DD
     - `islice(iterable, start, stop[, step])`避免了`arr[start:end:step]`产生的拷贝
 - `math`包实现了排列, 组合, 阶乘, GCD, LCM, 开方取整而且因为是内置函数所以更快
+
 ```python
 pow(base, exp, mod=None)
 abs(n)
