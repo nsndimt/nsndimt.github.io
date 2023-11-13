@@ -470,8 +470,12 @@ class BinaryIndexTree:
 
 # Two pointer
 
-- 同向双指针 子数组 子序列
-- 寻找单调性进行优化 $n^2$ 循环
+- 同向双指针
+    - 关键字：子数组 子序列
+    - 要求: 
+        - 小区间满足 大区间一定满足
+        - 大区间满足 小区间一定满足
+    - 原理: 优化O(N^2)循环 避免枚举
 ```python
 #同向双指针 求最小窗口 区间越大越可能满足条件 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
@@ -517,7 +521,9 @@ def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
     return ans
 ```
 
-- 对向双指针 排除答案
+- 对向双指针 
+    - 排除指针之间为候选答案(contain most water)
+    - 排除左指针之前为候选答案(3sum smaller) -> 枚举右指针，左指针是否需要回退
 
 ```python
 def maxArea(self, height):
@@ -530,9 +536,50 @@ def maxArea(self, height):
             j -= 1
         maxarea = max(min(height[i], height[j]) * (j - i), maxarea)
     return maxarea
+
+def threeSumSmaller(self, nums: List[int], target: int) -> int:
+    N = len(nums)
+    nums.sort()
+    ans = 0
+    for c in range(2, N):
+        residual = target - nums[c]
+        a = 0
+        b = c - 1
+        while a < b:
+            if nums[a] + nums[b] < residual:
+                ans += b - a
+                a += 1
+            else:
+                b -= 1
+    return ans
+
+def triangleNumber(self, nums: List[int]) -> int:
+    N = len(nums)
+    
+    if N < 3:
+        return 0
+    
+    nums.sort()
+    start = 0
+    while start < N and nums[start] <= 0:
+        start += 1
+
+    if N - start < 3:
+        return 0
+    
+    # print(nums, start)
+    ans = 0
+    for a in range(start, N - 2):
+        b = a + 1
+        for c in range(a + 2, N):
+            while b < c and nums[a] + nums[b] <= nums[c]:
+                b += 1
+            ans += c - b
+    return ans
 ```
 
 - 快慢指针
+    - 链表找环，找环入口，找中间节点，
 
 ```python
 def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
@@ -551,7 +598,7 @@ def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNod
     return dummy.next
 ```
 
-- 分组循环 滑动窗口
+- 滑动窗口 左右指针分组循环
 
 ```python
 def alternatingSubarray(self, nums: List[int]) -> int:
@@ -1432,6 +1479,50 @@ for i in range(N):
 print(dp[-1])
 ```
 
+- 分组背包
+
+```python
+
+"""
+3 5
+2
+1 2
+2 4
+1
+3 4
+1
+4 5
+第一行有两个整数 N，V，用空格隔开，分别表示物品组数和背包容量。
+接下来有 N 组数据：
+每组数据第一行有一个整数 Si，表示第 i 个物品组的物品数量；
+每组数据接下来有 Si 行，每行有两个整数 vij,wij，用空格隔开，分别表示第 i 个物品组的第 j 个物品的体积和价值；
+"""
+
+N, V = map(int, input().split())
+
+volume = []
+value = []
+
+for i in range(N):
+    gsz = int(input())
+    volume.append([])
+    value.append([])
+    for j in range(gsz):
+        vol, val = map(int, input().split())
+        volume[-1].append(vol)
+        value[-1].append(val)
+
+
+dp = [0] * (V + 1)
+
+for i in range(N):
+    for j in range(V, -1, -1):
+        for vol, val in zip(volume[i], value[i]):
+            if j-vol >= 0:
+                dp[j] = max(dp[j], dp[j-vol] + val)
+# print(dp)
+print(dp[-1])
+```
 
 - 求价值max/min的模型里：
     - 求体积**恰好**为j：
@@ -1516,6 +1607,46 @@ for i, n in enumerate(coins):
     for c in range(amount+1):
         dp[c] = dp[c] + dp[max(c-n, 0)] + 1
 ans = dp[-1]
+```
+
+- 分组背包,数位DP
+```python
+# 看成是「至少装满型」分组背包，每组都可以从 a 到 z 中选一个物品，求至少有 1 个 l、1 个 t 和 2 个 e 的方案数。
+def stringCount(self, n: int) -> int:
+    MOD = 10**9 + 7
+
+    @cache
+    def dfs(i: int, L: int, t: int, e: int) -> int:
+        if i == 0:
+            return 1 if L == t == e == 0 else 0
+        
+        res = dfs(i - 1, max(l - 1, 0), t, e) #max操作压缩了路径避免超时
+        res += dfs(i - 1, L, max(t - 1, 0), e)
+        res += dfs(i - 1, L, t, max(e - 1, 0))
+        res += dfs(i - 1, L, t, e) * 23
+        return res % MOD
+    
+    return dfs(n, 1, 1, 2)
+
+#套用数位DP思路会超时
+def stringCount(self, n: int) -> int:
+    MOD = 10**9 + 7
+    
+    @cache  # 记忆化搜索
+    def f(i: int, t: int, l: int, e: int) -> int:
+        if i == n:
+            # 每个合法数字(把字母认为是26进制)算一个
+            # 要验证合法性 因为 t, l, e 可能为 0
+            return 1 if t >= 1 and l >= 1 and e >= 2 else 0
+        
+        res = 0
+        res += f(i + 1, t + 1, l, e)
+        res += f(i + 1, t, l + 1, e)
+        res += f(i + 1, t, l, e + 1)
+        res += f(i + 1, t, l, e) * 23
+        return res % MOD
+    
+    return f(0, 0, 0, 0)
 ```
 
 # 贪心
@@ -1698,7 +1829,6 @@ class Trie:
 ```python
 # 核心思想: 利用单调性避免栈、队列大小达到O(N) 进而导致O(N^2)做法存在大量无效比较
 # 1. 复杂度: 出栈入栈各一次 O(N) 2.返回位置而不是值
-# 单调栈
 # # 正向遍历
 s = deque()
 previous_greater = [-1] * len(arr)
