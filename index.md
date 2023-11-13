@@ -192,6 +192,7 @@ def dutch_national_flag(self, nums: List[int]) -> None:
             read += 1
         # print(nums, read, write_0, write_2)
 ```
+- Bubble/Selection/Insertion/Quick Sort and Median of  Three
 
 ```python
 def bubblesort(arr):
@@ -219,11 +220,7 @@ def insertionSort(arr):
             arr[prev + 1] = arr[prev]
             j -= 1
         arr[prev + 1] = key
-```
 
-- Quick Sort and Median of  Three
-
-```python
 def median_of_three(arr, low, high):
     mid = (low + high) // 2
     if arr[low] < arr[mid]:
@@ -331,7 +328,6 @@ def cmp(a, b):
 
 sorted([(1, 2), (4, 2)], key=functools.cmp_to_key(cmp))
 sorted([(1, 2), (4, 2)], key=operator.itemgetter(0))
-
 ```
 
 # Prefix Sum
@@ -644,7 +640,7 @@ def equal(arr, v):
     - 下一次二分查找区间：不能再查找(区间不包含)mid，防止死循环 => 区间恒缩小
     - 判断条件，返回值：取决于寻找什么 和区间开闭无关
 
-## Binary Search using bisect  
+- Binary Search using bisect  
 
 | position arr[p]     | bisect return p                 | minium possible value   | maxium possible value        |
 | -----------         | -----------                     | -----------             | -----------                  |
@@ -654,7 +650,7 @@ def equal(arr, v):
 | first great or equal| bisect.bisect_left(arr, v)      | 0                       | len(arr) (all less)          |
 
 
-## Loop invariant
+- Loop invariant
 
 | position            | if condition    | return                       | red         | blue        |
 | -----------         | -----------     | -----------                  | ----------- | ----------- |
@@ -664,34 +660,34 @@ def equal(arr, v):
 | first great or equal| arr[mid] < v    | right                        | < v         | >= v        |
 | equal               | arr[mid] != v   | -1 all colored => not found  | < v         | > v         |
 
-## equivalent implementation
-- `(left, right)`
-    - 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
-    - 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
-    - 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
-    - `left = -1; right = 1` => `mid = (left + right) // 2`
-    - 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
+- Equivalent Implementation
+    - `(left, right)`
+        - 因为未检查区间 `(left, right)` 为开区间 所以`left = -1; right = len(arr)`
+        - 红区间: `[0, left]` 蓝区间: `[right, len(arr) - 1]`
+        - 因为未检查区间 `(left, right)` 为开区间 所以`left + 1 == right`时区间为空 `while left + 1 < right:`
+        - `left = -1; right = 1` => `mid = (left + right) // 2`
+        - 因为未检查区间 `(left, right)` 为开区间 所以 `left = mid`和`right = mid`不会导致mid留在未检查区间里
 
-- `[left, right)`
-    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
-    - 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
-    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
-    - `left = 0; right = 1` => `mid = (left + right) // 2`
-    - 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
+    - `[left, right)`
+        - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left = 0; right = len(arr)`
+        - 红区间: `[0, left)` 蓝区间: `[right, len(arr) - 1]`
+        - 因为未检查区间 `[left, right)` 为左闭右开区间 所以`left == right`时区间为空 `while left < right:`
+        - `left = 0; right = 1` => `mid = (left + right) // 2`
+        - 因为未检查区间 `[left, right)` 为左闭右开区间 所以 `left = mid + 1`和`right = mid`不会导致mid留在未检查区间里
 
-- `[left, right]`
-    - 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
-    - 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
-    - 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
-    - `left = 0; right = 0` => `mid = (left + right) // 2`
-    - 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
+    - `[left, right]`
+        - 因为未检查区间 `[left, right]` 为闭区间 所以`left = 0; right = len(arr) - 1`
+        - 红区间: `[0, left)` 蓝区间: `(right, len(arr) - 1]`
+        - 因为未检查区间 `[left, right]` 为闭区间 所以`left == right + 1`时区间为空 `while left <= right:`
+        - `left = 0; right = 0` => `mid = (left + right) // 2`
+        - 因为未检查区间 `[left, right]` 为闭区间 所以 `left = mid + 1`和`right = mid - 1`不会导致mid留在未检查区间里
 
-- `(left, right]`
-    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
-    - 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
-    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
-    - `left = -1; right = 0` => `mid = (left + right + 1) // 2`
-    - 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
+    - `(left, right]`
+        - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left = -1; right = len(arr) - 1`
+        - 红区间: `[0, left]` 蓝区间: `(right, len(arr) - 1]`
+        - 因为未检查区间 `(left, right]` 为左开右闭区间 所以`left == right`时区间为空 `while left < right:`
+        - `left = -1; right = 0` => `mid = (left + right + 1) // 2`
+        - 因为未检查区间 `(left, right]` 为左开右闭区间 所以 `left = mid`和`right = mid - 1`不会导致mid留在未检查区间里
 
 # Recursion
 
@@ -1224,8 +1220,7 @@ def atMostNGivenDigitSet(self, digits: List[str], n: int) -> int:
 
 ## knapsack
 
-- 学会一维数组方案， 极大节省时间:
-
+- 01背包
 ```python
 def findTargetSumWays(self, nums: List[int], target: int) -> int:
     total = sum(nums)
@@ -1260,7 +1255,7 @@ def findTargetSumWays(self, nums: List[int], target: int) -> int:
     # dp[0][0] = 1
     dp = [0]*(p_target+1)
     dp[0] = 1
-
+    # 学会一维数组方案， 极大节省时间:
     for i, n in enumerate(nums):
         # for c in range(p_target+1):
         #     if c < n:
@@ -1283,7 +1278,11 @@ def findTargetSumWays(self, nums: List[int], target: int) -> int:
     # ans = dp[-1][-1]
     ans = dp[-1]
     return ans
+```
 
+- 01背包
+
+```python
 def coinChange(self, coins: List[int], amount: int) -> int:
     n = len(coins)
     
@@ -1328,13 +1327,111 @@ def coinChange(self, coins: List[int], amount: int) -> int:
     ans = dp[-1]
     ans = ans if ans != 1<<31 else -1
     return ans
+```
 
+- 多重背包
+
+```python
 # 多重背包 每种物品有 k_i 个
 # 二进制分组优化 把多重背包转化成 0-1 背包模型来求解
-# 一个物品可以选7次 =》 可以选 1个物品 2个物品 4个物品 至多一次
+# 一个物品可以选6次 =》 可以选 1个物品 2个物品 3个物品 至多一次
 
+"""
+4 5
+1 2 3
+2 4 1
+3 4 3
+4 5 2
+"""
 
+N, V = map(int, input().split())
+
+volume = []
+value = []
+
+for i in range(N):
+    vol, val, cnt = map(int, input().split())
+    base = 1
+    # print(vol, val, cnt)
+    while base <= cnt:
+        # print(base)
+        volume.append(vol * base)
+        value.append(val * base)
+        cnt -= base
+        base <<= 1
+    if cnt:
+        # print(cnt)
+        volume.append(vol * cnt)
+        value.append(val * cnt)
+
+dp = [0] * (V + 1)
+
+for i in range(len(volume)):
+    for j in range(V, volume[i]-1, -1):
+        dp[j] = max(dp[j], dp[j-volume[i]] + value[i])
+
+print(dp[-1])
 ```
+
+- 混合背包
+
+```python
+
+"""
+4 5
+1 2 -1
+2 4 1
+3 4 0
+4 5 
+si=−1 表示第i种物品只能用1次
+si=0 表示第i种物品可以用无限次
+si>0 表示第i种物品可以使用si次
+"""
+
+N, V = map(int, input().split())
+
+volume = []
+value = []
+cnt = []
+
+for i in range(N):
+    v, w, s = map(int, input().split())
+    if s <= 0:
+        volume.append(v)
+        value.append(w)
+        cnt.append(s)
+    else:
+        volume.append([])
+        value.append([])
+        cnt.append(s)
+        base = 1
+        while base <= s:
+            volume[-1].append(v * base)
+            value[-1].append(w * base)
+            s -= base
+            base <<= 1
+        if s:
+            volume[-1].append(v * s)
+            value[-1].append(w * s)
+
+
+dp = [0] * (V + 1)
+
+for i in range(N):
+    if cnt[i] == -1:
+        for j in range(V, volume[i]-1, -1):
+            dp[j] = max(dp[j], dp[j-volume[i]] + value[i])
+    elif cnt[i] == 0:
+        for j in range(volume[i], V+1):
+            dp[j] = max(dp[j], dp[j-volume[i]] + value[i])
+    else:
+        for j in range(len(volume[i])):
+            for k in range(V, volume[i][j]-1, -1):
+                dp[k] = max(dp[k], dp[k-volume[i][j]] + value[i][j])
+        
+print(dp[-1])
+```
+
 
 - 求价值max/min的模型里：
     - 求体积**恰好**为j：
