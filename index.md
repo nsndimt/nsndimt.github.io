@@ -1610,6 +1610,7 @@ ans = dp[-1]
 ```
 
 - 分组背包,数位DP
+
 ```python
 # 看成是「至少装满型」分组背包，每组都可以从 a 到 z 中选一个物品，求至少有 1 个 l、1 个 t 和 2 个 e 的方案数。
 def stringCount(self, n: int) -> int:
