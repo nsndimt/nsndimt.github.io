@@ -1044,7 +1044,9 @@ def getPermutation(self, n: int, k: int) -> str:
         # print(ans)
     return "".join(ans)
 ```
+
 # Combination
+
 ```python
 # 设元素范围从 0 到 n −1 挨个判断每个元素是否在集合 s 中：
 for i in range(n):
@@ -1272,6 +1274,7 @@ def atMostNGivenDigitSet(self, digits: List[str], n: int) -> int:
 ## knapsack
 
 - 01背包
+
 ```python
 def findTargetSumWays(self, nums: List[int], target: int) -> int:
     total = sum(nums)
