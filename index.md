@@ -13,7 +13,7 @@ layout: default
 
 
 # Python语言特性
-- 避免$O(N)$复杂度操作
+- 避免 $O(N)$ 复杂度操作
     - 数组拼接: `[i] + arr + [-1]`比`[i, *arr, i+1]`慢
     - 数组和字符串切片: 传递下标而不是数组或字符串
     - 字符串拼接: `' '.join()`
@@ -476,6 +476,7 @@ class BinaryIndexTree:
         - 小区间满足 大区间一定满足
         - 大区间满足 小区间一定满足
     - 原理: 优化O(N^2)循环 避免枚举
+
 ```python
 #同向双指针 求最小窗口 区间越大越可能满足条件 小区间满足包含它的大区间一定满足
 def minSubArrayLen(self, target: int, nums: List[int]) -> int:
@@ -497,7 +498,6 @@ def minSubArrayLen(self, target: int, nums: List[int]) -> int:
             else:
                 # when leave the loop if subarray is empty then left = right + 1
                 # otherwise [0, right], [1, right], [left-1, right] are all valid window
-                # therefore to count every valid window
                 cnt += left
                 break
         # after the while loop  so better not write codes here
@@ -519,11 +519,39 @@ def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
             p //= nums[left]
             left += 1
     return ans
+
+def triangleNumber(self, nums: List[int]) -> int:
+    N = len(nums)
+    
+    if N < 3:
+        return 0
+    
+    nums.sort()
+    start = 0
+    while start < N and nums[start] <= 0:
+        start += 1
+
+    if N - start < 3:
+        return 0
+    
+    # print(nums, start)
+    ans = 0
+    for a in range(start, N - 2):
+        b = a + 1
+        for c in range(a + 2, N):
+            while b < c:
+                # invalid => shift
+                if nums[a] + nums[b] <= nums[c]:
+                    b += 1
+                else:
+                    ans += c - b
+                    break
+    return ans
 ```
 
 - 对向双指针 
     - 排除指针之间为候选答案(contain most water)
-    - 排除左指针之前为候选答案(3sum smaller) -> 枚举右指针，左指针是否需要回退
+    - 排除左指针之前为候选答案(3sum smaller) -> 枚举右指针，左指针不需要回退
 
 ```python
 def maxArea(self, height):
@@ -551,30 +579,6 @@ def threeSumSmaller(self, nums: List[int], target: int) -> int:
                 a += 1
             else:
                 b -= 1
-    return ans
-
-def triangleNumber(self, nums: List[int]) -> int:
-    N = len(nums)
-    
-    if N < 3:
-        return 0
-    
-    nums.sort()
-    start = 0
-    while start < N and nums[start] <= 0:
-        start += 1
-
-    if N - start < 3:
-        return 0
-    
-    # print(nums, start)
-    ans = 0
-    for a in range(start, N - 2):
-        b = a + 1
-        for c in range(a + 2, N):
-            while b < c and nums[a] + nums[b] <= nums[c]:
-                b += 1
-            ans += c - b
     return ans
 ```
 
