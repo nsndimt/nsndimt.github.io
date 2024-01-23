@@ -13,11 +13,11 @@ layout: default
 
 
 # Python语言特性
-- 避免 $O(N)$ 复杂度操作
+- 避免 O(N) 复杂度操作
     - 数组拼接: `[i] + arr + [-1]`比`[i, *arr, i+1]`慢
     - 数组和字符串切片: 传递下标而不是数组或字符串
     - 字符串拼接: `' '.join()`
-    - 数组`pop`: $O(1)$ to pop the last element of a Python list, and $O(N)$ to pop an arbitrary element 
+    - 数组`pop`: O(1) to pop the last element of a Python list, and O(N) to pop an arbitrary element 
 
 - 多维数组创建
     - `[x[:] for x in [[0]*1000]*1000]`
@@ -257,14 +257,14 @@ def quickSort(arr, low, high):
 
 - Top K largest
     - Bubble sort/Selection Sort K times
-        - time complexity $O(NK)$
+        - time complexity O(NK)
     - Maintain min heap with size K
-        - time complexity $O(NlogK)$
+        - time complexity O(NlogK)
     - Construct max heap and pop K
-        - Construction heap is $O(N)$
-        - time complexity $O(KlogN+N)$
+        - Construction heap is O(N)
+        - time complexity O(KlogN+N)
     - recursive partition (quickselect)
-        - time complexity $O(N)$
+        - time complexity O(N)
 
 ```python
 def quickSelect(arr, k):
@@ -1969,8 +1969,8 @@ def topologicalSort():
 
 - Floyd multi source shortest path
     - can deal with negative edge but not negative cycle
-    - time complexity $O(N^2)$
-    - space complexity $O(N^3)$
+    - time complexity O(N^2)
+    - space complexity O(N^3)
 
 ```python
 '''
@@ -1995,8 +1995,8 @@ for k in range(n):
 
 - Bellman-Ford single source shortest path
     - can deal with negative edge but not negative cycle
-    - time complexity $O(NE)$ when the graph is dense use dijkstra instead
-    - space complexity $O(N)$
+    - time complexity O(NE) when the graph is dense use dijkstra instead
+    - space complexity O(N)
 
 ```python
 adj = defaultdict(list)
@@ -2048,10 +2048,10 @@ dis[s] = 0
 
 - Dijkstra single source shortest path
     - cannot deal with negative edge
-    - time complexity $O((N + E))logN$ with heap, $O(N^2 + E)$ without heap
-        - sparse graph when $E << N$: with heap is better
-        - dense graph when $E \approx N^2$: without heap is better
-    - space complexity $N$
+    - time complexity O((N + E)logN) with heap, O(N^2 + E) without heap
+        - sparse graph when E << N: with heap is better
+        - dense graph when E ~= N^2: without heap is better
+    - space complexity O(N)
 
 ```python
 
@@ -2072,7 +2072,7 @@ while q:
 
 |        | insert | find-min | delete-min | decrease-key |
 |:------:|:--------------:|:----------------------:|:------------------------:|:------------:|
-| 二叉堆 |   $O(\log n)$  |         $O(1)$         |        $O(\log n)$       |    $O(\log n)$    |
+| 二叉堆 |   O(logn)  |         O(1)         |        O(logn)       |    O(logn)    |
 
 ```python
 # implement max heap with array
