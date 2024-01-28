@@ -974,6 +974,9 @@ def prime(n):
 # Interval
 
 ```python
+# span A: [x1, x2]
+# span B: [y1, y2]
+
 def dont_overlap(x1, y1, x2, y2):
     return x2 < y1 or x1 > y2
 
