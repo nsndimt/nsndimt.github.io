@@ -3,3 +3,5 @@ description: A place for sharing my leetcode notes with others
 theme: just-the-docs
 
 url: https://nsndimt.github.io
+
+math: mathjax
